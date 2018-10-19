@@ -1,4 +1,4 @@
-\section{Examples}\label{sec:example_encodings}
+\section{Example Encodings}\label{sec:example_encodings}
 
 In this section we describe the encoding of two different problems in SMT. The first one will be the Free Fall problem that we have described earlier as our working example and the second one will be the Generator Problem. 
 
@@ -254,7 +254,7 @@ moving_{dur,3} :=0\\
 \label{tab:free fall example}
 \end{table}
 
-\subsection{Simple Generator}
+\subsection{Generator}
 
 In this section we describe the encoding of a PDDL+ benchmark, the \textit{generator} problem. The domain and the problem files are shown in Figures~\ref{fig:domain file} and~\ref{fig:problem file}, respectively. The initial state asserts that there is one generator; the generator's capacity is $C$; and initial fuel level is $F$. The goal state is that the generator has been run for a given amount of time: \texttt{(generator-ran)}.
 
@@ -468,7 +468,7 @@ generate_{dur,2} := 0\\
 \small
 \centering
 \begin{BVerbatim}
-0.0      : generate      [1000.0]
+0.0: generate [1000.0]
 \end{BVerbatim}
 \caption{Plan for the generator problem.}
 \label{fig:generator plan}

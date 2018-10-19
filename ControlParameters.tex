@@ -135,29 +135,29 @@ By introducing the control parameter variables, the constraints over a happening
 \textbf{Proposition and real variable support}
 \begin{enumerate}[label=H\arabic*.]
  % Literal support
-  \item $\bigwedge_{p_{0,t}\in P} p_{1,t} \rightarrow (p_{0,t} \vee \bigvee_{e_{0,t} | p_{0,t}\in eff^{+}_{e_{0,t}}} e_{0,t} \vee \bigvee_{a_t | p_{0,t}\in eff^{+}_{a_{t}}} a_t)$
-  \item $\bigwedge_{p_{i,t}\in P} \neg p_{1,t} \rightarrow (\neg p_{0,t} \vee \bigvee_{e_{i,t} | p_{i,t}\in eff^{-}_{e_{i,t}}} e_{0,t} \vee \bigvee_{a_t | p_{i,t}\in eff^{-}_{a_{t}}} a_t)$
-  \item $\bigwedge_{i=1}^{B+1} \bigwedge_{p_{i,t}\in P} p_{i+1,t} \rightarrow (p_{i,t} \vee \bigvee_{e_{i,t}| p_{i,t}\in eff^{+}_{e_{i,t}}} e_{i,t})$
-  \item $\bigwedge_{i=1}^{B+1} \bigwedge_{p_{i,t}\in P} \neg p_{i+1,t} \rightarrow (\neg p_{i,t} \vee \bigvee_{e_{i,t} | p_{i,t}\in \mathit{eff}^{-}_{e_{i,t}}} e_{i,t})$
+  \item $\bigwedge_{p \in P} p_{1,t} \rightarrow (p_{0,t} \vee \bigvee_{e \in E | p \in eff^{+}_{e}} e_{0,t} \vee \bigvee_{a_t \in A | p \in eff^{+}_{a}} a_t)$
+  \item $\bigwedge_{p \in P} \neg p_{1,t} \rightarrow (\neg p_{0,t} \vee \bigvee_{e \in E | p \in eff^{-}_{e}} e_{0,t} \vee \bigvee_{a \in A | p \in eff^{-}_{a}} a_t)$
+  \item $\bigwedge_{i=1}^{B} \bigwedge_{p \in P} p_{i+1,t}      \rightarrow (     p_{i,t} \vee \bigvee_{e \in E | p \in eff^{+}_{e}} e_{i,t})$
+  \item $\bigwedge_{i=1}^{B} \bigwedge_{p \in P} \neg p_{i+1,t} \rightarrow (\neg p_{i,t} \vee \bigvee_{e \in E | p \in eff^{-}_{e}} e_{i,t})$
  % Real variable support
-   \item $\bigwedge_{v_{i,t}\in V} (\bigwedge_{a_t | v_{i,t}\in \mathit{eff}^{num}_{a_t}} \neg a_{t} \wedge \bigwedge_{e_{i,t} | v_{i,t}\in \mathit{eff}^{num}_{e_{i,t}}} \neg e_{0,t}) \rightarrow (v_{i+1,t} = v_{i,t})$
-  \item $\bigwedge_{i=1}^{B} \bigwedge_{v_{i,t}\in V} (\bigwedge_{e_{i,t} | v_{i,t}\in \mathit{eff}^{num}_{e_{i,t}}} \neg e_{i,t}) \rightarrow (v_{i+1,t} = v_{i,t})$
+  \item $\bigwedge_{v \in V} (\bigwedge_{a \in A | v \in eff^{num}_{a}} \neg a_{t} \wedge \bigwedge_{e \in E | v \in eff^{num}_{e}} \neg e_{0,t}) \rightarrow (v_{i+1,t} = v_{i,t})$
+  \item $\bigwedge_{i=1}^{B} \bigwedge_{v \in V} (\bigwedge_{e \in E | v \in eff^{num}_{e}} \neg e_{i,t}) \rightarrow (v_{i+1,t} = v_{i,t})$
 \end{enumerate}
 \textbf{Event preconditions and effects}
 \begin{enumerate}[label=H\arabic*.]\setcounter{enumi}{6}
  % event preconditions
- \item $\bigwedge_{i=0}^{B} \bigwedge_{e_{i,t}\in E} e_{i,t} \leftrightarrow pre_{e_{i,t}}(P_{i} \cup V_{i})$
+ \item $\bigwedge_{i=0}^{B} \bigwedge_{e \in E} e_{i,t} \leftrightarrow pre_{e} (P_{i} \cup V_{i})$
  % event effects
- \item $\bigwedge_{i=0}^{B} \bigwedge_{e_{i,t}\in E} e_{i,t} \rightarrow {eff}_{e_{i,t}}(P_{i+1} \cup V_{i+1})$
+ \item $\bigwedge_{i=0}^{B} \bigwedge_{e \in E} e_{i,t} \rightarrow eff_{e} (P_{i+1} \cup V_{i+1})$
 \end{enumerate}
 % \end{minipage}
 % \begin{minipage}[t]{0.42\linewidth}
 \textbf{{Action preconditions and effects}
 \begin{enumerate}[label=H\arabic*.]\setcounter{enumi}{8}
  % Action preconditions
- \item \bm{$\bigwedge_{a_t\in A} a_t \rightarrow pre_{a_{t}}(P_{0,t} \cup V_{0,t})$}
+ \item \bm{$\bigwedge_{a \in A} a_t \rightarrow pre_{a}(P_{0,t} \cup V_{0,t})$}
   % action effects
- \item \bm{$\bigwedge_{a_t\in A} a_t \rightarrow eff_{a_{t}}(P_{1,t} \cup V_{1,t})$}
+ \item \bm{$\bigwedge_{a \in A} a_t \rightarrow eff_{a}(P_{1,t} \cup V_{1,t})$}
 \end{enumerate}}
 %\textbf{Support across epsilon separation}
 %\begin{enumerate}[label=H\arabic*.]\setcounter{enumi}{10}
@@ -168,15 +168,15 @@ By introducing the control parameter variables, the constraints over a happening
 \textbf{Process triggering}
 \begin{enumerate}[label=H\arabic*.]\setcounter{enumi}{10}
  % process triggering
- \item $\bigwedge_{ps_t\in Ps} ps_t \leftrightarrow pre_{ps_{t}}(P_{B+1,t} \cup V_{B+1,t})$
- \item $\bigwedge_{ps_t\in Ps} dur_{ps_t} >= 0$
- \item $\bigwedge_{ps_t\in Ps} ps_t \leftrightarrow (dur_{ps_t} > 0)$
+ \item $\bigwedge_{ps\in Ps} ps_t \leftrightarrow pre_{ps}(P_{B+1,t} \cup V_{B+1,t})$
+ \item $\bigwedge_{ps\in Ps} dur_{ps_t} >= 0$
+ \item $\bigwedge_{ps\in Ps} ps_t \leftrightarrow (dur_{ps_t} > 0)$
 \end{enumerate}
 \textbf{Action mutexes}
 \begin{enumerate}[label=H\arabic*.]\setcounter{enumi}{13}
  % Action mutexes
- \item $\bigwedge_{a_t\in A} \bigwedge_{a'_t\in A | a_t\nparallel a'_t} (\neg a_t \vee \neg a'_t)$
- \end{enumerate}
+ \item $\bigwedge_{a \in A} \bigwedge_{a' \in A | a \nparallel a'} (\neg a_t \vee \neg a'_t)$
+\end{enumerate}
 % Bounds on control parameters
 \textbf{{Bounds on control parameters}
 \begin{enumerate}[label=H\arabic*.] \setcounter{enumi}{14} 
@@ -201,39 +201,39 @@ Adding control parameters to durative actions also affects the encoding of the c
 \textbf{Instance description}
 \begin{enumerate}[label=P\arabic*.]
   % Known states
- \item $I(P_{0,1}\cup V_{0,1})$
- \item $G(P_{B+1,n}\cup V_{B+1,n})$
- % Timing of happenings
- \item $time_0 = 0$
- \item $\bigwedge_{i=2}^n time_i \geq time_{i-1}+\epsilon$
+  \item $I(P_{0,1}\cup V_{0,1})$
+  \item $G(P_{B+1,n}\cup V_{B+1,n})$
+  % Timing of happenings
+  \item $time_0 = 0$
+  \item $\bigwedge_{i=2}^n time_i \geq time_{i-1}+\epsilon$
 \end{enumerate}
 \textbf{Proposition support}
 \begin{enumerate}[label=P\arabic*.]\setcounter{enumi}{4}
- % Literal support
- \item $\bigwedge_{i=2}^n \bigwedge_{p\in P} p_{0,i} \rightarrow p_{B+1,i-1}$
- \item $\bigwedge_{i=2}^n \bigwedge_{p\in P} \neg p_{0,i} \rightarrow \neg p_{B+1,i-1}$
+  % Literal support
+  \item $\bigwedge_{i=2}^n \bigwedge_{p\in P} p_{0,i} \rightarrow p_{B+1,i-1}$
+  \item $\bigwedge_{i=2}^n \bigwedge_{p\in P} \neg p_{0,i} \rightarrow \neg p_{B+1,i-1}$
 \end{enumerate}
 \end{minipage}
 \begin{minipage}[t]{0.6\linewidth}
 \textbf{Invariants}
 \begin{enumerate}[label=P\arabic*.]\setcounter{enumi}{6}
-% Process timing conditions (these are necessary in combination to ensure happenings occur at dur=0)
- \item $\bigwedge_{i=2}^n \bigwedge_{ps_i\in Ps_i} ps_{i-1} \rightarrow dur_{ps_i} = dur_{ps_{i-1}} - time_i + time_{i-1}$
- % Interval constraints
- \item $\bigwedge_{i=1}^{n-1} \bigwedge_{ps_i\in Ps_i}  ps_i \leftrightarrow pre_{\leftrightarrow ps_i}$
- \item $\bigwedge_{i=1}^{n-1} \bigwedge_{e\in E} \neg pre_{\leftrightarrow e_i}$
+  % Process timing conditions (these are necessary in combination to ensure happenings occur at dur=0)
+  \item $\bigwedge_{i=2}^n \bigwedge_{ps\in Ps} ps_{i-1} \rightarrow dur_{ps_i} = dur_{ps_{i-1}} - time_i + time_{i-1}$
+  % Interval constraints
+  \item $\bigwedge_{i=1}^{n-1} \bigwedge_{ps \in Ps}  ps_i \leftrightarrow pre_{\leftrightarrow ps_i}$
+  \item $\bigwedge_{i=1}^{n-1} \bigwedge_{e\in E} \neg pre_{\leftrightarrow e_i}$
 \end{enumerate}
 \textbf{Continuous change on real variables}
 \begin{enumerate}[label=P\arabic*.]\setcounter{enumi}{9}
  % Vector flows
-\item $\bigwedge_{i=1}^{n-1} \bigwedge_{v\in V} (flow_v)_i = \int^{time_{i+1}}_{time_i} \sum_{ps\in Ps} (\mathit{eff}^{num}_{\leftrightarrow ps}[v])_idt$
- \item $\bigwedge_{i=2}^n \bigwedge_{v\in V} (v_{0,i} = v_{B+1,i-1} + (flow_v)_{i-1})$
+  \item $\bigwedge_{i=1}^{n-1} \bigwedge_{v\in V} flow_{v_i} = \int^{time_{i+1}}_{time_i} \sum_{ps\in Ps} eff^{num}_{\leftrightarrow ps}(V_i)dt$
+  \item $\bigwedge_{i=2}^n \bigwedge_{v\in V} (v_{0,i} = v_{B+1,i-1} + flow_{v,i-1})$
 \end{enumerate}
 \end{minipage}
 \vspace{1em}\\\textbf{Control parameter support}
 \begin{enumerate}[label=P\arabic*.]\setcounter{enumi}{11}
  % control parameter
- \item \bm{$\bigwedge_{i=1}^{n-1} \bigwedge_{a_t\in A} dur_{ps^a_i}  \rightarrow d_i = d_{i+1}$}
+ \item \bm{$\bigwedge_{i=1}^{n-1} \bigwedge_{d^a_t \in D_t} (dur_{a_i}>0)  \rightarrow (d^a_i = d^a_{i+1})$}
 \end{enumerate}
 \caption{Reduction of PDDL+ planning problem with control parameters $\Pi+$ to SMT.}
 \label{eq:plan2}
@@ -265,7 +265,7 @@ $$
 \end{array}
 $$
 
-The plan found by the SMTPlan for this domain and problem file is shown in Figure~\ref{fig:cashpoint plan}. The reason that the planner suggests to withdraw \pounds99.5, is that the action $check\_pocket$ has a precondition $(inpocket \ \ ?z) >= 100$ and the initial value for $(inpocket \ \ pounds)$ is 2.
+The plan found by the SMTPlan for this domain and problem file is shown in Figure~\ref{fig:cashpoint plan}. The reason that the planner suggests to withdraw \pounds99.5, is that the action $check\_pocket$ has a precondition $(inpocket \ \ ?z) >= 100$ and the initial value for $(inpocket \ \ pounds)$ is 2. The solution found by the SMT solver is not guaranteed to be optimal with respect to time. This is demonstrated by the plan shown in Figure~\ref{fig:cashpoint plan}, in which there is a 2-second gap between the end of the first withdraw action and the beginning of the second. This is because the only constraint is that the two happenings are separated by at least $\epsilon$, and the SMT solver is left to choose any valid value. It is possible to include a metric for the SMT solver to optimise; for example, the time point of the final happening. However, this does not guarantee optimality with respect to plan duration, as increasing the bound on the number of happenings might lead to a solution with shorter duration.
 
 \begin{figure}[thb]
 \small

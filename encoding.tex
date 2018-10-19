@@ -81,9 +81,9 @@ The constraints within a happening are shown in Figure~\ref{eq:state}.
 \textbf{Event preconditions and effects}
 \begin{enumerate}[label=H\arabic*.]\setcounter{enumi}{6}
  % event preconditions
- \item $\bigwedge_{i=0}^{B} \bigwedge_{e \in E} e_{i,t} \leftrightarrow pre_{e} (P_{i} \cup V_{i})$
+ \item $\bigwedge_{i=0}^{B} \bigwedge_{e \in E} e_{i,t} \leftrightarrow pre_{e} (P_{i,t} \cup V_{i,t})$
  % event effects
- \item $\bigwedge_{i=0}^{B} \bigwedge_{e \in E} e_{i,t} \rightarrow eff_{e} (P_{i+1} \cup V_{i+1})$
+ \item $\bigwedge_{i=0}^{B} \bigwedge_{e \in E} e_{i,t} \rightarrow eff_{e} (P_{i+1,t} \cup V_{i+1,t})$
 \end{enumerate}
 % \end{minipage}
 % \begin{minipage}[t]{0.42\linewidth}
@@ -143,7 +143,7 @@ Having defined happenings, a PDDL+ problem $\Pi+$ can be encoded as a bounded nu
 
 Therefore, the existence of a plan for a  {\sl PDDL+ planning problem $\Pi+$ with bound $n$} is proved by building the SMT formula $\Pi+_n$ in the theory of quantifier-free (nonlinear) real arithmetic with $n$ copies of the set of happening variables $X = \{x_1,\ldots,x_n\}$ for $n \geq 1$. A \textit{plan for $\Pi+$} is the assignment to the action variables in any proof of $\Pi+_n$. The encoding is illustrated by Figure~\ref{fig:plan}.
 
-\begin{figure*}[htb!]
+\begin{figure*}[thb]
 \center
 \input{diagrams/plan}
 \caption{A plan is found by building a formula with $n$ copies of the set of variables $x_t$ for $t = 1 \ldots n$. Each Happening models discrete change. Between happenings there is only continuous numeric change. The initial state is modelled in $t_1$, and the goal constraints are added to $t_n$.}
@@ -152,7 +152,7 @@ Therefore, the existence of a plan for a  {\sl PDDL+ planning problem $\Pi+$ wit
 
 \noindent The constraints for a happening in Figure~\ref{eq:state} are copied for each happening $x_1 \ldots x_n$. Additional constraints in the SMT formula $\Pi+_n$ are shown in Figure~\ref{eq:plan} and explained below.
 
-\begin{figure*}[thb!]
+\begin{figure*}[thb]
 \begin{minipage}[t]{0.39\linewidth}
 \textbf{Instance description}
 \begin{enumerate}[label=P\arabic*.]
@@ -225,6 +225,31 @@ Constraint (P9) similarly ensures that an event is not triggered during an inter
 
 These constraints enforce continuous change over the interval (P10), applying the result to each real variable (P11). In order to calculate the change, the indefinite integral of the process' effects upon the variable must be computed. This is done automatically using the computer algebra systems (CAS) SymPy~\cite{sympy} and Piranha~\cite{bis18}.
 
+For example, consider the process of the ball falling in the working example. The ball is accelerating at a constant rate in a single axis. The PDDL process describing the continuous change of the ball's velocity and height is as shown in Figure~\ref{fig:ballproc}.
+
+% another example (Free fall)
+\begin{figure}[htb!]
+\small
+\centering
+\begin{BVerbatim}
+(:process moving
+ :parameters (?b - ball)
+ :precondition (and (not (holding ?b)) (>= (height ?b) 0))
+ :effect (and
+    (increase (velocity ?b) (* #t -9.8) )
+    (increase (height ?b) (* #t (velocity ?b))))
+ )
+\end{BVerbatim}
+\caption{Simplified PDDL+ Free Fall problem file}
+\label{fig:ballproc}
+\end{figure}
+
+While this process is active, the change in height of the ball during the interval between two happenings is a non-linear function of time. To enable the encoding to describe this change the CAS first produces an expression for the change in height whose terms are time, and constant coefficients. For example:
+$$
+\delta h = \frac{1}{2} {at^{2}} + {v_0}t
+$$
+Where $v_0$ is the initial velocity, and $a$ is the constant acceleration. This is explained in more detail in Section~\ref{sec:example_encodings}, where the whole encoding of the working example is shown.
+
 Note that in this approach, the integration and differentiation required for P8, P9, and P10 are performed outside the solver, during the encoding. Hence the integration is done only once for each domain.
 \end{itemize}
 
@@ -232,67 +257,49 @@ Note that in this approach, the integration and differentiation required for P8,
 
 The encoding has been implemented in a planner, called {\sc SMTPlan}. The planner follows the procedure of {\sc SATPlan}, iteratively deepening on the number of happenings (as opposed to the number of steps). Given a planning problem $\Pi$, the algorithm of {\sc SMTPlan} is as follows:
 
-\begin{itemize}
+\begin{enumerate}
 \item
 Perform the indefinite integration and differentiation on the domain of $\Pi+$.
 \item
-Encode $\Pi+$ as $\Pi+_2$.
+Encode $\Pi+$ with an initial bound of $n$ happenings, as $\Pi+_n$.
 \item
-Pass $\Pi+_2$ to SMT solver and fork:
+Pass $\Pi+_n$ to SMT solver to attempt to find a satisfying assignment.
 \item
-If $\Pi+_2$ is unsatisfiable, then set $n=n+1$ and go back to encoding.
+If $\Pi+_n$ is unsatisfiable, then $n$ is incremented ($n=n+s$) and the problem is encoded and passed to the solver again.
 \item
 If satisfiable, then extract the truth assignment to the action variables $A_0, \ldots,\, A_n$ and return.
-\end{itemize}
+\end{enumerate}
+The algorithm is shown in Algorithm~\ref{alg:pseudo} and the steps described in more detail below. The process is illustrated in figure~\ref{fig:SMTPlan}.
 
-The indefinite integration and differentiation required for constraints enforcing the checking of invariant conditions (P8-P9) and continuous numeric change (P10-P11) is performed by extracting the expressions from the PDDL domain of $\Pi+$ and passing to the CAS (line XX). In the current implementation of {\sc SMTPlan} the CAS {\sc piranha} is used, as it is able to solve polynomial non-linear integrals. The resulting expressions are used in all subsequent encoding steps.
-
-The implementation of the encoding step uses the \textit{c++} interface of the SMT-solver {\sc z3}. This interface allows the planner to incrementally add constraints and call the solver. The benefit of this incremental solving is that each happening only needs to be encoded once, and the iterations are encoded in time linear to the size of the happening and independent of the number of happenings.
-
-The process is illustrated in figure~\ref{fig:SMTPlan}.
+\begin{algorithm}
+\SetAlgoLined
+\textbf{Input:} Planning Problem $\Pi$, initial bound $n$, step size $s$.\\
+$\xi \leftarrow extractExpressions(\Pi)$\tcp*{\small{Extract expressions from domain of $\Pi$.}}
+ \Loop{}{
+$\Pi_n \leftarrow encode(\Pi,\xi,n)$\tcp*{\small{Extend encoding to $n$ happenings.}}
+$M \leftarrow solve(\Pi_n)$\tcp*{\small{Find satisfying assignment.}}
+\uIf{$M = \bot$}{
+  $n = n + s$\tcp*{\small{Increment the happening bound.}}
+}
+\Else{
+$\pi \leftarrow extractPlan(M)$\tcp*{\small{Extract a plan from the satisfying assignment.}}
+\textbf{return};
+}
+}
+\caption{{\sc SMTPlan}}
+\label{alg:pseudo}
+\end{algorithm}
 
 \begin{figure}[ht]
 \centering
-%\input{figures/duraction.tex}
-\begin{tikzpicture}[>=latex]
-
-\begin{scope}
-
-%\node[rectangle,draw,minimum width=1in, minimum height=1.6in] (p1) at (-6,0) {} ;
-
-\node (p1) at (-6,0) {PDDL+ domain};
-
-\draw[->] (p1) edge (p2);
-\node (p1_d) at (-3.5,0.65) {\textit{Encode with n}};
-\node (p1_d) at (-3.5,0.40) {\textit{happenings}};
-
-\node [rectangle,draw,minimum width=1.3in, minimum height=0.6in] (p2) at (0,0) {} ;
-\node (p2_d) at (0,0) {\textit{SMT Solver}};
-
-\node (p5) at (6.5,0) {\textit{Plan for the}};
-\node (p5_d) at (6.5,-0.25) {\textit{PDDL+ domain}};
-
-\draw[->] (p2) edge (p5);
-\node (p2_d) at (3.8,0.25) {\textit{Satisfying Assignment}};
-
-\draw[-] (-2,-4) edge (2,-4);
-\node (p6_d) at (0,-4.75) {\textit{Update the number of}};
-\node (p6_d) at (0,-5.25) {\textit{happenings $n' = n+1$}};
-
-\draw[<-] (-2,-2.05) edge (-2,-4);
-
-\node (p6_d) at (-3.6,-2.5) {$\textit{Encoding to SMT }$};
-\node (p6_d) at (-3.6,-3) {$\textit{with updated number}$};
-\node (p6_d) at (-3.6,-3.5) {$\textit{of happenings}$};
-
-\draw[-] (2,-4) edge (2,-2.05);
-
-%\node (p6_d) at (3,-2.75) {$\textit{Not }$};
-\node (p6_d) at (3.1,-3) {$\textit{Unsatistfiable}$};
-
-
-\end{scope}
-\end{tikzpicture}
-\caption{An overview of a SMT encoding process for finding a plan for a planning problem. \color{red}{replace image completely}}
+\includegraphics[width=0.50\textwidth]{diagrams/architecture.pdf}
+\caption{An overview of the SMTPlan architecture. (A) First the Computer Algebra System works performs the indefinite integration and differentiation to produce the expressions of continuous numeric change. (B) The PDDL problem instance is encoded as a SMT formula, with an initial number of happenings $n=2$. The encoding is passed to an SMT solver. (C) If the encoding is unsatisfiable, then the number of happenings is incremented. (D) Finally, if the encoding is satisfiable, the plan is printed. }
 \label{fig:SMTPlan}
 \end{figure}
+
+The indefinite integration and differentiation required for constraints enforcing the checking of invariant conditions (P8-P9) and continuous numeric change (P10-P11) is performed by extracting the expressions from the PDDL domain of $\Pi+$ and passing to the CAS (line 2). In the current implementation of {\sc SMTPlan} the CAS {\sc piranha} is used, as it is able to solve polynomial non-linear integrals. The resulting expressions are used in all subsequent encoding steps.
+
+The implementation of the encoding step (line 4) uses the \textit{c++} interface of the SMT-solver {\sc z3}. This interface allows the planner to incrementally add constraints and call the solver. The benefit of this incremental solving is that each happening only needs to be encoded once, and the iterations are encoded in time linear to the size of the happening and independent of the number of happenings. For example, if an encoding with $4$ happenings was found to be unsatisfiable, then extending the encoding to $5$ happenings only requires adding the variables and constraints of happening $x_5$ to the $z3$ interface.
+
+Extracting the plan from the satisfying assignment (line 9) is performed by simply printing all the variables $a\in A_i$ for each $i=1\ldots n$ that are assigned \textit{true}. This corresponds with the actions applied in each happening in order to achieve the goal.
+
