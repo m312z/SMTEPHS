@@ -1,0 +1,475 @@
+\section{Examples}\label{sec:example_encodings}
+
+In this section we describe the encoding of two different problems in SMT. The first one will be the Free Fall problem that we have described earlier as our working example and the second one will be the Generator Problem. 
+
+\subsection{Free Fall} \label{sssec:Free_Fall}
+
+We consider the working example introduced earlier: \emph{Free Fall} problem. We release the ball from the height of 10 meters from the ground (initial velocity is zero). The goal is to catch the ball when the height of the ball is 5 meters. The domain and problem files are shown in Figures~\ref{fig:freefall domain} and~\ref{fig:freefall problem}, respectively.
+
+In order to describe the SMT encoding, first we define the SMT variables used in our encoding, for a single happening $x_t$. Since the number of events in our domain is equal to one, the bound of cascading events in our problem is fixed as one, so we just have $E_{0,t}$. This means the number of internal layers at each happening is equal to 2. Below we show the constraints on one happening ($x_1$), then the constraints describing the transition relation in an encoding with four happenings $x_{1}, \ldots, x_3$.
+
+$$
+x_t := \Bigg \langle
+\begin{array}{lr}
+time_t &:Real\\
+holding_{0,t}, holding_{1,t}, caught_{0,t}, caught_{1,t} &:Bool\\
+height_{0,t}, height_{1,t}, velocity_{0,t}, velocity_{1,t} , number\_bounces_{0,t}, number\_bounces_{1,t} &:Real\\ 
+bounce_{0,t}&:Bool\\
+moving_{t}&:Bool\\
+release_{t}, catch_{t}  &:Bool\\
+moving_{dur,t}  &:Real\\
+\end{array}
+\Bigg \rangle
+$$
+As we can see in section 4.1, the first group of constraints are related to \emph{proposition and real variable support}. The following constraints show $H1$ and $H2$:
+$$
+\begin{array}{l}
+holding_{1,1} \rightarrow (holding_{0,1} \vee catch_{1})\\
+caught_{1,1} \rightarrow (caught_{0,1} \vee catch_{1})\\
+\neg holding_{1,1} \rightarrow (\neg holding_{0,1} \vee release_{1})\\
+\neg caught_{1,1} \rightarrow \neg caught_{0,1}\\
+\end{array}
+$$
+Constraint $H5$ is modelled as following: 
+$$
+\begin{array}{l}
+(\neg bounce_{0,1} \wedge \neg catch_{1}) \rightarrow (velocity_{1,1} = velocity_{0,1})\\
+\neg bounce_{0,1} \rightarrow (number\_bounces_{1,1} = number\_bounces_{0,1})\\
+height_{0,1} = height_{1,1}
+\end{array}
+$$
+Since the bound on the number of cascading events is $1$, there are no constraints required for  $H3,H4$ and $H6$. The next group of constraints are \emph{event preconditions and effects}, which are encoded as following (corresponding to $H7$ and $H8$):
+$$
+\begin{array}{l}
+bounce_{0,1} = ((height_{1,0} <= 1/1000000) \wedge (velocity_{1,0} < 0))\\
+bounce_{0,1} \rightarrow (velocity_{1,1} = -velocity_{1,0})\\
+bounce_{0,1} \rightarrow (number\_bounces_{1,1} = number\_bounces_{0,1} + 1)
+\end{array}
+$$
+Similar to the events, the next group of constraints are \emph{actions preconditions and effects} which correspond to $H9$ and $H10$.
+$$
+\begin{array}{l}
+release_{1} \rightarrow holding_{0,1}\\
+release_{1} \rightarrow (velocity_{0,1} = 0)\\
+catch_{1} \rightarrow (height_{0,1} >= 5)\\
+catch_{1} \rightarrow (height_{0,1} <= 5.01)\\
+catch_{1} \rightarrow (number\_bounces_{0,1} >= 1 )\\
+release_{1} \rightarrow \neg holding_{1,1}\\
+catch_{1} \rightarrow holding_{1,1}\\
+catch_{1} \rightarrow caught_{1,1}\\
+catch_{1} \rightarrow (velocity_{1,1} = 0)\\
+\end{array}
+$$
+The constraints $H11$, $H12$, and $H13$ related to the \emph{process triggering} are encoded as follows:
+$$
+\begin{array}{l}
+moving_{1} = \neg holding_{1,1} \wedge (height_{1,1} >= 0)\\
+moving_{1} =  (moving_{dur,1} > 0)\\
+moving_{dur,1} >= 0\\
+\end{array}
+$$
+Since the two actions that we have are not mutex, the constraint related to that ($H14$) is not needed. The next series of constraints encode the transition of one happening to the next happening. We start with \emph{Instance description} constraints of the problem ($P1-P4$). First the initial state of the problem (corresponding to $P1$):
+$$
+\begin{array}{l}
+holding_{0,1} \\
+\neg caught_{0,1}\\
+velocity_{0,1} = 0\\
+height_{0,1} = 10\\
+number\_bounces_{0,1} = 0\\
+\end{array}
+$$
+The goal state (corresponding to $P2$):
+$$
+caught_{1,3}
+$$
+The timings of the happenings (corresponding to $P3$ and $P4$):
+$$
+\begin{array}{l}
+time_1 = 0\\
+time_2 >= time_1 + 0.001\\
+time_3 >= time_2 + 0.001\\
+\end{array}
+$$
+The next group of constraints is \emph{Proposition support} (corresponding to $P5$ and $P6$). Here we show only the transition constraints between happenings $x1$ and $x2$, which are then duplicated for the transition between $x2$ and $x3$.
+$$
+\begin{array}{l}
+holding_{0,2} \rightarrow holding_{1,1}\\
+caught_{0,2} \rightarrow caught_{1,1}\\
+\neg holding_{0,2} \rightarrow \neg holding_{1,1}\\
+\neg caught_{0,2} \rightarrow \neg caught caught_{1,1}\\
+\end{array}
+$$
+\emph{Invariants} are the next group of constraints (corresponding to $P7-P9$). The derivatives of the numeric variables affected by the continuous process \textit{moving} are used in these constraints to ensure that no interval between two happenings includes a turning point in their function.
+$$
+\begin{array}{l}
+moving_{1} \rightarrow (moving_{dur,2} = moving_{dur,1} + time_1 - time_2)\\
+moving_{1} \rightarrow (height_{0,2}*height_{1,1} >= 0)\\
+moving_{1} \rightarrow (velocity_{0,2}*velocity_{1,1} >= 0)\\
+\end{array}
+$$
+The last group of constraints ensures the \emph{continuous change on the real variables}. The kinematic equations of the free fall problem are the following: 
+$$
+\begin{array}{l}
+v = at +v_0\\ 
+h = 1/2 {at^{2}} + {v_0}t + h_0 \\
+\end{array}
+$$
+Based on these equations, we can encode the height and the velocity of the ball as follows:
+$$
+\begin{array}{l}
+moving_{1} \rightarrow (velocity_{0,2} = -9.8 * (time_2 - time_1) + velocity_{1,1})\\
+moving_{1} \rightarrow (height_{0,2} = -4.9 * (time_2 - time_1)^{2} + velocity_{1,1}*(time_2 - time_1) + height_{1,1})\\
+\neg moving_{1} \rightarrow (velocity_{0,2} = velocity_{1,1})\\
+\end{array}
+$$
+
+When the above encoding is passed to an SMT solver, such as {\sc z3}, the solver attempts to find an assignment of values to the variables that will satisfy every constraint. Such a satisfying assignment corresponds to a valid plan trace. Table~\ref{tab:free fall example} shows the SMT variables and the values assigned to them, corresponding to a valid plan trace. The corresponding plan generated by selecting each action variable assign the value $true$, is shown in Figure~\ref{fig:freefall plan}.
+
+\begin{figure*}[htb!]
+\small
+\centering
+\begin{BVerbatim}
+0.0      : release      [0.0]
+1.850446 : catch        [0.0]
+\end{BVerbatim}
+\caption{Plan for the Free Fall problem.}
+\label{fig:freefall plan}
+\end{figure*}
+
+\begin{table}[htb]
+\centering
+\small
+\def\arraystretch{1.3}
+\begin{tabular}{|>{$}l<{$} | >{$}l<{$}| >{$}l<{$} |}
+\hline 
+x_1& x_2 & x_3\\
+\hline
+time_1:=0 & time_2:=1.428571 & time_3:=1.850446\\
+\hline
+\begin{array}{lr}
+{holding_{0,1} :=1} \\
+{holding_{1,1} :=0}\\
+caught_{0,1} :=0 \\
+caught_{1,1} :=0\\
+\end{array}
+&
+\begin{array}{lr}
+holding_{0,2} :=0 \\
+holding_{1,2} :=0\\
+caught_{0,2} :=0 \\
+caught_{1,2} :=0\\
+\end{array}
+&
+\begin{array}{lr}
+holding_{0,3} := 0 \\
+holding_{1,3} := 1\\
+caught_{0,3} := 0 \\
+caught_{1,3} := 1\\
+\end{array}
+\\ \hline
+\begin{array}{lr}
+height_{0,1} := 10\\
+height_{1,1} := 10\\
+velocity_{0,1} := 0\\
+velocity_{1,1} := 0\\
+number\_bounces_{0,1} := 0 \\ 
+number\_bounces_{1,1} := 0 \\
+\end{array}
+&
+\begin{array}{lr}
+height_{0,2} := 0.000001\\
+height_{1,2} := 0.000001\\
+velocity_{0,2} := - 13.999999\\
+velocity_{1,2} :=   13.999999\\
+number\_bounces_{0,2} := 0 \\ 
+number\_bounces_{1,2} := 1 \\
+\end{array}
+&
+\begin{array}{lr}
+height_{0,3} :=  5.034156\\
+height_{1,3} :=  5.034156\\
+velocity_{0,3} := 9.865624\\
+velocity_{1,3} := 0\\
+number\_bounces_{0,3} := 1 \\ 
+number\_bounces_{1,3} := 1 \\
+\end{array}
+\\ \hline
+\begin{array}{lr}
+bounce_{0,1} :=0 \\
+\end{array}
+&
+\begin{array}{lr}
+bounce_{0,2} :=1 \\
+\end{array}
+&
+\begin{array}{lr}
+bounce_{0,3} :=0 \\
+\end{array}
+\\ \hline
+\begin{array}{lr}
+moving_{1} :=1 \\
+\end{array}
+&
+\begin{array}{lr}
+moving_{2} :=1 \\
+\end{array}
+&
+\begin{array}{lr}
+moving_{3} :=0 \\
+\end{array}
+
+\\ \hline
+
+\begin{array}{lr}
+{\bf release_{1} :=1} \\
+catch_{1} :=0 \\
+\end{array}
+&
+\begin{array}{lr}
+release_{2} :=0 \\
+catch_{2} :=0 \\
+\end{array}
+&
+\begin{array}{lr}
+release_{3} :=0 \\
+{\bf catch_{3} :=1} \\
+\end{array}
+
+\\ \hline
+\begin{array}{lr}
+moving_{dur,1} :=1.850446\\
+\end{array}
+&
+\begin{array}{lr}
+moving_{dur,2} :=0.421875\\
+\end{array}
+&
+\begin{array}{lr}
+moving_{dur,3} :=0\\
+\end{array}
+
+\\ \hline
+\end{tabular}
+\caption{A plan (the assignment to the SMT variables) for the free fall problem domain. True assignments to action and event variables are shown in bold.}
+\label{tab:free fall example}
+\end{table}
+
+\subsection{Simple Generator}
+
+In this section we describe the encoding of a PDDL+ benchmark, the \textit{generator} problem. The domain and the problem files are shown in Figures~\ref{fig:domain file} and~\ref{fig:problem file}, respectively. The initial state asserts that there is one generator; the generator's capacity is $C$; and initial fuel level is $F$. The goal state is that the generator has been run for a given amount of time: \texttt{(generator-ran)}.
+
+We will show the encoding of two happenings $x_1$ and $x_2$ -- the minimum number of steps required to solve this problem. As there are no events in the domain, we will impose a bound $B=0$ on the number of cascading events. Therefore each happening is the set:
+
+$$
+x_t := \Bigg \langle
+\begin{array}{lr}
+time_t &:Real \\
+gen\_ran_{0,t}, gen\_ran_{1,t} &:Bool \\
+fuelLevel_{0,t}, fuelLevel_{1,t}, capacity_{0,t}, capacity_{1,t} &:Real \\
+generate_{sta,t}, generate_{end,t} &:Bool \\
+generate_t &:Bool\\
+generate_{dur,t} &:Real
+\end{array}
+\Bigg \rangle
+$$
+
+% example domain
+\begin{figure}[thb]
+\small
+\begin{verbatim}
+(define (domain simple_generator)
+(:requirements
+    :fluents :durative-actions
+    :duration-inequalities :adl
+    :typing)
+    
+(:types generator)
+
+(:predicates 
+    (generator-ran)
+    
+(:functions
+    (fuelLevel ?g - generator)
+    (capacity ?g - generator))
+
+(:durative-action generate
+ :parameters (?g - generator)
+ :duration (= ?duration 1000)		 
+ :condition (over all (>= (fuelLevel ?g) 0))
+ :effect (and
+    (decrease (fuelLevel ?g) (* #t 1))
+    (at end (gen-ran)))))
+\end{verbatim}
+\caption{Simplified PDDL+ generator domain file}
+\label{fig:domain file}
+\end{figure}
+
+
+\begin{figure}[thb]
+\small
+\begin{verbatim}
+(define (problem simple_generator)
+(:domain simple_generator)
+(: objects gen - generator)
+(:initial 
+    (= (fuelLevel gen) 1020)
+    (= (capacity gen) 1060))
+
+(:goal
+    (gen-ran)))
+\end{verbatim}
+\caption{Simplified PDDL+ generator problem file}
+\label{fig:problem file}
+\end{figure}
+
+\noindent Proposition support constraints (within happenings) and action preconditions and effects, describe the discrete changes that occurs within a happening (H1-H10):
+$$
+\begin{array}{l}
+gen\_ran_{1,1} \rightarrow (gen\_ran_{0,1} \vee generate_{end,1}) \\
+\neg gen\_ran_{1,1} \rightarrow \neg gen\_ran_{0,1} \\
+gen\_ran_{1,2} \rightarrow (gen\_ran_{0,2} \vee generate_{end,2}) \\
+\neg gen\_ran_{1,2} \rightarrow \neg gen\_ran_{0,2} \\
+\\
+fuelLevel_{0,1} = fuelLevel_{1,1} \\
+fuelLevel_{0,2} = fuelLevel_{1,2} \\
+\\
+generate_{sta,1} \rightarrow (fuelLevel_{0,1} >= 0) \\
+generate_{sta,2} \rightarrow (fuelLevel_{0,2} >= 0) \\
+generate_{end,1} \rightarrow (fuelLevel_{0,1} >= 0) \\
+generate_{end,2} \rightarrow (fuelLevel_{0,2} >= 0) \\
+\\
+generate_{sta,1} \rightarrow (generate_{dur,1} = 1000.0) \\
+generate_{sta,2} \rightarrow (generate_{dur,1} = 1000.0) \\
+\\
+\neg generate_{end,1} \\
+generate_{end,2} \rightarrow generate_1 \\
+generate_{end,2} \rightarrow (generate_{dur,2} = 0.0) \\
+generate_{end,1} \rightarrow (generate_{dur,1} = 0.0) \\
+generate_{end,2} \rightarrow gen\_ran_{1,2} \\
+generate_{end,1} \rightarrow gen\_ran_{1,1} \\
+\end{array}
+$$
+Process triggering constraints work together to ensure that the durative actions begin and end within a happening (H11-H13):
+$$
+\begin{array}{l}
+generate_1 = (generate_{dur,1} > 0) \\
+\neg generate_1 = generate_{dur,1} = 0 \\
+generate_2 = (generate_{dur,2} > 0) \\
+\neg generate_2 = generate_{dur,2} = 0 \\
+\end{array}
+$$
+Finally, action mutexes are included (H14). In our encoding, we make the starts and ends of durative actions mutually exclusive, eg. for $i=\{1,2\}$:
+$$
+\neg gen\_start_i \vee \neg gen\_end_i
+$$
+The instance description enforces the initial state, the goal condition, and that the second happening is at least $\epsilon$ after the first (P1-P4).
+$$
+\begin{array}{l}
+\neg gen\_ran_{0,1} \\
+fuelLevel_{0,1} = 1020 \\
+capacity_{0,1} = 1060 \\
+gen\_ran_{1,2} \\
+time_1 = 0 \\
+time_2 >= time_1 + 0.001
+\end{array}
+$$
+Proposition support constraints (between happenings) ensure that the discrete state stays constant during the interval between happenings (P5-P6):
+$$
+\begin{array}{l}
+gen\_ran_{1,1} = gen\_ran_{0,2} \\
+\end{array}
+$$
+Invariant constraints ensure that the durative action's overall condition holds over an interval in which its associated process is active, and that the durative action's duration is properly updated across the interval (P7-P9):
+$$
+\begin{array}{l}
+generate_1 \rightarrow (fuelLevel_{0,1} >= 0) \\
+generate_2 \rightarrow (fuelLevel_{0,2} >= 0) \\
+generate_1 \rightarrow (generate_{dur,2} = generate_{dur,1} + time_1 - time_2)
+\end{array}
+$$
+The continuous change over real variables is defined and enforced by the $flow$ variables (P10-P11):
+$$
+\begin{array}{l}
+generate_1 \rightarrow fuelLevel_{0,2} = fuelLevel_{1,1} - time_2 + time_1 \\
+\neg generate_1 \rightarrow (fuelLevel_{0,2} = fuelLevel_{1,1}) \\
+capacity_{0,2} = capacity_{0,1} \\
+\end{array}
+$$
+
+The resulting plan is shown by assignment to variables in Table~\ref{tab:example}. The plan corresponding to the assignment presented in Table~\ref{tab:example} is shown in Figure~\ref{fig:generator plan}.
+
+\begin{table}[htb]
+\centering
+\small
+\def\arraystretch{1.1}
+\begin{tabular}{|>{$}l<{$} | >{$}l<{$}|}
+\hline
+x_1 &  x_2 \\
+\hline
+t_1:=0 & t_2:=1000 \\
+\hline
+\begin{array}{lr}
+gen\_ran_{0,1} :=0 \\
+gen\_ran_{1,1}:=0 \\
+\end{array}
+&
+\begin{array}{lr}
+gen\_ran_{0,2} :=1 \\
+gen\_ran_{1,2} :=1 \\
+\end{array}
+\\ \hline
+\begin{array}{lr}
+fuelLevel_{0,1} :=1020.0 \\
+fuelLevel_{1,1} :=1020.0 \\
+capacity_{0,1} :=1060.0 \\
+capacity_{1,1} :=1060.0 \\
+\end{array}
+&
+\begin{array}{lr}
+fuelLevel_{0,2} :=20.0 \\
+fuelLevel_{1,2} :=20.0 \\
+capacity_{0,2} :=1060.0 \\
+capacity_{1,2} :=1060.0 \\
+\end{array}
+\\ \hline
+\begin{array}{lr}
+generate_1 := 1 \\
+\end{array}
+&
+\begin{array}{lr}
+generate_2 := 0 \\
+\end{array}
+\\ \hline
+\begin{array}{lr}
+{\bf generate_{sta,1} := 1} \\
+generate_{end,1} := 0 \\
+\end{array}
+&
+\begin{array}{lr}
+generate_{sta,2} := 0 \\
+{\bf generate_{end,2} := 1} \\
+\end{array}
+\\ \hline
+\begin{array}{lr}
+generate_{dur,1} := 1000.0\\
+
+\end{array}
+&
+\begin{array}{lr}
+generate_{dur,2} := 0\\
+\end{array}
+\\ \hline
+\end{tabular}
+\caption{The SMT variables and the assignments found by SMTPlan for the simple generator domain, as assignment to the variables. Boolean variables that are true are assigned as 1 and the ones are false are 0.}
+\label{tab:example}
+\end{table}
+
+\begin{figure*}[htb!]
+\small
+\centering
+\begin{BVerbatim}
+0.0      : generate      [1000.0]
+\end{BVerbatim}
+\caption{Plan for the generator problem.}
+\label{fig:generator plan}
+\end{figure*}

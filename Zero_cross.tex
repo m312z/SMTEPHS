@@ -1,0 +1,30 @@
+
+\usepgfplotslibrary{fillbetween}
+
+\begin{tikzpicture}[domain=-2:2]
+
+%\draw[->] (-3.5,0) -- (3.5,0)
+%node[below right] {$x$};
+%\draw[->] (0,-2) -- (0,3.5)
+%node[left] {$y$};
+%\draw plot[id=x] function{-(x*x)+3};
+%\end{tikzpicture}
+
+
+\begin{axis}[
+    xmin=-4, xmax=4,
+    ymin=-4, ymax=4
+    ]
+
+    \addplot [name path=plot1, ultra thin, domain=-10:10, samples=150]{-(x*x)+2}; 
+    \addplot [name path=plot2, ultra thin, domain=-8:8]{1};
+\addplot[thick, samples=50, smooth,domain=-4:4,magenta, name path=three] coordinates {(2,-4)(2,4)} ;
+\addplot[thick, samples=50, smooth,domain=-4:4,magenta, name path=three] coordinates {(-2,-4)(-2,4)};
+
+    
+
+    \addplot[red] fill between[of=plot1 and plot2, soft clip={domain=-1:1}];
+    
+
+\end{axis}
+\end{tikzpicture}

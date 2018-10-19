@@ -1,0 +1,70 @@
+\documentclass[letterpaper]{article}
+\usepackage{jair,balance}
+\usepackage{times,helvet,courier}
+\usepackage{amssymb,amsmath,amsthm,bm}
+\usepackage{graphicx,multirow,array}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{enumitem,pgfplots,fancyvrb}
+\usepackage[output-decimal-marker={,},exponent-product=\cdot]{siunitx}
+\usepackage{icomma}
+\usepackage{amsmath}
+
+\usepackage{tikz}
+\usetikzlibrary{decorations.pathreplacing}
+\pgfplotsset{compat=1.13}
+
+\usepackage{todonotes}
+
+\usepackage{pdfrender}
+
+\input{commands}
+
+\frenchspacing
+
+\setlength{\pdfpagewidth}{8.5in}
+\setlength{\pdfpageheight}{11in}
+
+\def\year{2015}
+\pdfinfo{
+/Title (SMT Encodings for Planning for Hybrid Systems)
+/Author (Parisa Zehtabi, Michael Cashmore, Daniele Magazzeni)
+}
+
+\setcounter{secnumdepth}{2}
+
+\begin{document}
+
+\title{SMT Encoding of Planning for Hybrid Systems}
+\author{\center
+ Michael Cashmore \, Daniele Magazzeni \, Parisa Zehtabi \\
+King’s College London, London, WC2R 2LS \\
+\textit{firstname.lastname@kcl.ac.uk} \\
+}
+\maketitle
+
+%\tableofcontents
+
+\begin{abstract}
+Planning in hybrid systems is important for dealing with real-world applications. PDDL+ supports this representation of domains with mixed discrete and continuous dynamics, and supports \textit{events} and \textit{processes} modelling exogenous change.
+%
+Motivated by numerous SAT-based planning approaches, we propose an approach to PDDL+ planning through SMT, describing an SMT encoding that captures all the features of the PDDL+ problem as published by Fox and Long. The encoding can be applied on domains with nonlinear continuous change. We describe the encoding in detail and provide in-depth examples.
+%
+We apply this encoding in a simple planning algorithm, demonstrating excellent results on a set of benchmark problems. 
+%
+We further extend the encoding to include planning with control parameters. The extended encoding allows the definition of actions to include infinite domain parameters, called control parameters. We provide an example problem with control parameters and show how it can be encoded and solved in SMT.
+\end{abstract}
+
+\input{introduction}
+\input{background}
+\input{working_example}
+\input{encoding}
+\input{example}
+\input{ControlParameters}
+\input{results}
+\input{related_work}
+\input{conclusion}
+
+\bibliographystyle{plain}
+\bibliography{bibliography}
+\end{document}

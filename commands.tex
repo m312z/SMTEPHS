@@ -1,0 +1,85 @@
+\def\memout{\hspace*{\fill}--\hspace*{\fill}}
+\newcommand{\eg}{e.\,g.}
+\newcommand{\ie}{i.\,e.}
+\newtheorem{proposition}{Proposition}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{example}{Example}
+
+\newtheoremstyle{my_def}% name
+  {5pt}%      Space above
+  {5pt}%      Space below
+  {}%         Body font
+  {}%         Indent amount (empty = no indent, \parindent = para indent)
+  {\bfseries}% Thm head font
+  {.}%        Punctuation after thm head
+  {.5em}%     Space after thm head: " " = normal interword space;
+        %       \newline = linebreak
+  {{#1} {#2} (\thmnote{#3})}%         Thm head spec (can be left empty, meaning `normal')
+\theoremstyle{my_def}
+\newtheorem{definition}{Definition}
+
+\newcommand{\astar}{\ensuremath{\textup{A}^*}}
+\newcommand{\idastar}{\ensuremath{\textup{IDA}^*}}
+\newcommand{\ha}{\ensuremath{\mathcal{H}}}
+
+\newcommand{\R}{\ensuremath{\mathcal{R}}}
+\newcommand{\var}{\ensuremath{\mathit{Var}}}
+\newcommand{\loc}{\ensuremath{\mathit{Loc}}}
+\newcommand{\relc}{\ensuremath{\mathit{Flow}}}
+\newcommand{\reld}{\ensuremath{\mathit{Trans}}}
+\newcommand{\inv}{\ensuremath{\mathit{I}}}
+\newcommand{\Input}{\ensuremath{\mathcal{U}}}
+\newcommand{\RealUniverse}{\ensuremath{\mathbb{R}^n}}
+\newcommand{\update}{\ensuremath{\xi}}
+\newcommand{\guard}{\ensuremath{g}}
+\newcommand{\HyperBox}{\ensuremath{\mathcal{B}}}
+\newcommand{\Vector}[1]{\ensuremath{\mathbf{#1}}}
+\newcommand{\PostC}[2]{post_c(#1,#2)}
+\newcommand{\PostD}[2]{post_d(#1,#2)}
+\newcommand{\sync}{\ensuremath{\mathit{Sync}}}
+\newcommand{\lab}{\ensuremath{\mathit{label}}}
+\newcommand{\dur}{\ensuremath{\mathit{dur}}}
+\newcommand{\lockstart}{\ensuremath{\overline{\mathit{lock}_a^\mathit{start}}}}
+\newcommand{\lockend}{\ensuremath{\overline{\mathit{lock}_a^\mathit{end}}}}
+\newcommand{\releasestart}{\ensuremath{\overline{\mathit{release}_a^\mathit{start}}}}
+\newcommand{\releaseend}{\ensuremath{\overline{\mathit{release}_a^\mathit{end}}}}
+\newcommand{\lock}{\ensuremath{\overline{\mathit{lock}_a}}}
+\newcommand{\release}{\ensuremath{\overline{\mathit{release}_a}}}
+\newcommand{\lockstartend}{\ensuremath{\overline{\mathit{lock}_a^\mathit{start/end}}}}
+\newcommand{\releasestartend}{\ensuremath{\overline{\mathit{release}_a^\mathit{start/end}}}}
+
+\newcommand{\ContState}{\mathbf{x}}
+\newcommand{\ContStateFunc}{\mathbf{X}}
+\newcommand{\DiscStateFunc}{L}
+\newcommand{\ContStateStart}{\mathbf{X}_{start}}
+\newcommand{\ContStateEnd}{\mathbf{X}_{end}}
+\newcommand{\run}{\rho}
+\newcommand{\traj}{\tau}
+
+\newcommand{\network}{\ensuremath{\mathcal{N}}}
+\renewcommand{\epsilon}{\ensuremath{\varepsilon}}
+
+\newcommand{\dom}{\ensuremath{\mathit{Dom}}}
+\newcommand{\prob}{\ensuremath{\mathit{Prob}}}
+\newcommand{\fs}{\ensuremath{\mathit{Fs}}}
+\newcommand{\rs}{\ensuremath{\mathit{Rs}}}
+\newcommand{\as}{\ensuremath{\mathit{As}}}
+\newcommand{\ps}{\ensuremath{\mathit{Ps}}}
+\newcommand{\es}{\ensuremath{\mathit{Es}}}
+\newcommand{\arity}{\ensuremath{\mathit{arity}}}
+\newcommand{\os}{\ensuremath{\mathit{Os}}}
+\newcommand{\init}{\ensuremath{\mathit{Init}}}
+\newcommand{\Hinit}{\ensuremath{\mathit{Init}}}
+
+
+\newcommand{\commentcite}[2]{{%
+    \renewcommand{\leftcite}{\relax}%
+    \renewcommand{\rightcite}{\relax}%
+    (#1, \cite{#2})}}
+\newcommand{\egcite}[1]{\commentcite{\eg}{#1}}
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "total"
+%%% End: 

@@ -1,0 +1,97 @@
+\begin{tikzpicture}[>=latex]
+  \begin{scriptsize}
+  \begin{scope}
+
+  % Initial and goal
+
+  \node[align=right, text width=4em] (b0e) at (-6em,0) {\large $I$};
+  \draw (-3em,0em) -- (2em,0em);
+  \node[circle, inner sep=0em, draw, minimum size=0.5em, fill=black] at (2em,0em) {};
+  
+  \node[align=left, text width=4em] (b0e) at (50em,-5em) {\large $G$};
+  \draw (42em,-5em) -- (47em,-5em);
+  \node[circle, inner sep=0em, draw, minimum size=0.5em, fill=black] at (42em,-5em) {}; 
+  
+  % Happening 1
+  
+  \node[align=center] at (2em,4em) {\large $x_1$};
+ 
+  
+  \draw (2em,1.5em) -- (2em,1em);
+
+  \node[circle, inner sep=0em, draw, minimum size=2.0em] (b01) at (2em,0) {};
+  \node[circle, inner sep=0em, draw, minimum size=2.0em] (b11) at (2em,-2em) {};
+  \node[circle, inner sep=0em, draw, minimum size=2.0em] (bb1) at (2em,-5em) {};
+
+
+  \draw (2em,-6em) -- (2em,-8em);
+  
+  \draw[->, dotted] (b11) -- (bb1);
+ 
+  
+  % Happening 2
+
+  \node[align=center] at (12em,4em) {\large $x_2$};
+ 
+  
+  \draw (12em,1.5em) -- (12em,1em);
+
+
+  \node[circle, inner sep=0em, draw, minimum size=2.0em] (b02) at (12em,0) {};
+  \node[circle, inner sep=0em, draw, minimum size=2.0em] (b12) at (12em,-2em) {};
+  \node[circle, inner sep=0em, draw, minimum size=2.0em] (bb2) at (12em,-5em) {};
+
+
+  \draw (12em,-6em) -- (12em,-8em);
+
+  
+  \draw[->, dotted] (b12) -- (bb2);
+  
+  
+  % Happening 3
+  
+  \node[align=center] at (22em,4em) {\large $x_3$};
+  
+ 
+  \draw (22em,1.5em) -- (22em,1em);
+
+
+  \node[circle, inner sep=0em, draw, minimum size=2.0em] (b03) at (22em,0) {};
+  \node[circle, inner sep=0em, draw, minimum size=2.0em] (b13) at (22em,-2em) {};
+  \node[circle, inner sep=0em, draw, minimum size=2.0em] (bb3) at (22em,-5em) {};
+
+
+  \draw (22em,-6em) -- (22em,-8em);
+ 
+  
+  \draw[->, dotted] (b13) -- (bb3);
+ 
+
+  % Happening 4
+  
+  \node[align=center] at (42em,4em) {\large $x_n$};
+  
+  \draw (42em,1.5em) -- (42em,1em);
+
+
+  \node[circle, inner sep=0em, draw, minimum size=2.0em] (b04) at (42em,0) {};
+  \node[circle, inner sep=0em, draw, minimum size=2.0em] (b14) at (42em,-2em) {};
+  \node[circle, inner sep=0em, draw, minimum size=2.0em] (bb4) at (42em,-5em) {};
+ 
+
+  \draw (42em,-6em) -- (42em,-8em);
+
+  
+  \draw[->, dotted] (b14) -- (bb4);
+
+  
+  
+  % Inter-happening edges
+  
+  \draw (bb1) edge[out=0,in=180,->] (b02);
+  \draw (bb2) edge[out=0,in=180,->] (b03);
+  \draw[dotted] (26em,-4em) -- (37em,-4em);
+  
+  \end{scope}
+  \end{scriptsize}
+\end{tikzpicture}

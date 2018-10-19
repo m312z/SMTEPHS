@@ -1,0 +1,22 @@
+\section{Introduction}
+
+Planning for hybrid systems is an important area in planning, mainly motivated by the need to deal with real-world applications. Hybrid systems are systems described by discrete as-well-as continuous variables.
+Many real world problems involve hybrid systems, subject to (continuous) physical effects and controlled by (discrete) digital equipment. PDDL+ \cite{pddl+} is the extension of Planning Domain Definition Language (PDDL) designed to model hybrid systems, pushing forward the use of planning in real-world domains.
+
+Examples of real-world domains include \textit{unit commitment}, which is a fundamental problem in power systems engineering. Unit commitment is the problem of deciding which generating units should be switched on, and when to switch them on, in order to efficiently meet anticipated demand. It has traditionally been solved as a Mixed Integer Programming (MIP) problem, however Campion et al.~\cite{ucp} investigate the benefits of using planning over the current established methods.
+Another planning application involving hybrid systems is investigated by Fox et al.~\cite{battery}, in which improving the efficiency of multiple battery usage has been modelled as planning problem.
+Vallati et al.~\cite{utc} focus on using mixed discrete-continuous planning to deal with unexpected circumstances in \textit{urban traffic control}.
+
+Many efforts are being made to extend current planning systems and modelling languages to support such domains. Penna et al. highlight the importance of hybrid systems in the real world and present the planner {\sc UPMurphi}~\cite{upmurphi}, a universal planner that is capable of reasoning with mixed discrete/continuous domains while respecting the semantics of PDDL+. A number of other approaches have been proposed that can handle \textit{subsets} of PDDL+, as described in Section~\ref{sec:rel_hyb}.
+
+In this paper we propose a new approach for PDDL+ planning that can handle the whole set of PDDL+ features and respects the full PDDL+ semantics. We propose a Satisfiability Modulo Theory (SMT) encoding of PDDL+ problems based on Boolean Satisfiability Problem (SAT) encodings of classical planning problems~\cite{kau96,rin10}. Planning as SAT has been effective for classical planning problems (e.g. the planner SATPlan~\cite{kau06}) and through carefully devised preprocessing and encoding can be applied effectively to temporal planning problems (e.g. the planner ITSAT~\cite{ran15}). In contrast to the state-based search approach to planning, these planners perform a search on encodings of a plan trace, iteratively deepening the trace's horizon. We build on this previous work, using the additional expressive power of SMT to approach PDDL+ planning.
+
+The proposed encoding allows for teh easy moelling of \textit{Control Parameters}~\cite{savas2016planning}, which is an interesting emerging area in planning. Using control parameters allows for the modelling of actions with infinite domain parameters (e.g. real numbers). This is a challenging proposition for state-based search planners, as the branching factor becomes similarly infinite. We show that for some domains, by extending PDDL+ with control parameters actually improves the performance of our SMT-based planner, allowing it to scale to problems that without control parameters cannot be solved in a reasonable time.
+
+The paper is structured as follows.
+In the next section we provide the background about hybrid systems, PDDL+, planning as SAT, and SMT.
+In Section~\ref{sec:working_example}, we introduce a working example that highlights PDDL+ features.
+We describe our encoding of PDDL+ into SMT in Section~\ref{sec:enc}, followed by an in-depth example of our encoding using the working example in Section~\ref{sec:example_encodings}.
+In Section~\ref{sec:control_parameters} we show how the encoding is extended to describe control parameters, and provide another in-depth example of the encoding.
+The approach is then evaluated on a set of benchmark problems in Section~\ref{sec:experiments}.
+In Section~\ref{sec:related_work} we give an overview of related works and conclude in Section~\ref{sec:conclusion}.
