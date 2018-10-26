@@ -128,7 +128,7 @@ x_t:=\Bigg \langle
 \Bigg \rangle 
 $$
 
-By introducing the control parameter variables, the constraints over a happening are also extended in the following way. As explained before, the control parameters are bounded in the domain file. First, we define two sets of constant values associated with each control parameter as the upper bounds and lower bounds. The members of set $U_d$ are constants which define the upper bounds of control parameters at each happening (since these upper bounds will not change throughout different happenings, we do not need to define different upper bounds for each happening). Similar to the upper bounds, we define a set of lower bounds as $L_d$ for the control parameters. Figure ~\ref{eq:state2} shows the set of constraints within a happening in the case of having control parameters in the domain. The changes are shown in bold compared to Figure~\ref{eq:state}.
+By introducing the control parameter variables, the constraints over a happening are extended in the following way. As explained before, the control parameters are bounded in the domain file. First, two sets are defined $U_d$ and $L_d$. The members of set $U_d$ are constants which define the upper bounds of control parameters at each happening (since these upper bounds will not change in different happenings, we do not need to define different upper bounds for each happening). $L_d$ represents the set of lower bounds for the control parameters. Figure~\ref{eq:state2} shows the set of constraints within a happening in the case of having control parameters. The changes are shown in bold compared to Figure~\ref{eq:state}.
 
 \begin{figure*}[thb!]
 % \begin{minipage}[t]{0.58\linewidth}
@@ -190,11 +190,10 @@ By introducing the control parameter variables, the constraints over a happening
 \label{eq:state2}
 \end{figure*}
 
-Within a happening, the structure of most of the constraints remain the same. However we need to add the constraints associated with the lower and upper bounds of control parameters (shown in equations $H15$ and $H16$). These constraints state that when the action is applied, the control parameter is bounded by its constant upper and lower bounds $u_d\in U_d$ and $l_d \in L_d$, respectively.
+Within a happening, the structure of most of the constraints remain the same. However we need to add the constraints associated with the lower and upper bounds of control parameters (shown in equations $H15$ and $H16$). These constraints state that when the action is applied, the control parameter is bounded by its constant upper and lower bounds $u_d\in U_d$ and $l_d \in L_d$, respectively. In addition, control parameters can appear in the conditions or effect of a durative action. Therefore $H9$ and $H10$ are also affected by control parameters. The control parameter variables $d_t\in D_t$ can be used directly in these constraints.
 
-Moreover, control parameters can appear in the conditions or effect of a durative action. Therefore $H9$ and $H10$ are also affected by control parameters. These constraints model the conditions and effects of an action, which can include expressions involving control parameter variables. The control parameter variables $d_t\in D_t$ can be used directly in these constraints.
-
-Adding control parameters to durative actions also affects the encoding of the constraints between the happenings explained in section~\ref{sec:enc_problem}. Figure ~\ref{eq:plan2} shows these equations. The changes compared to Figure~\ref{eq:plan} are shown in bold.
+Adding control parameters to durative actions also affects the encoding of the constraints between the happenings explained in section~\ref{sec:enc_problem}. Figure~\ref{eq:plan2} shows these equations. The changes compared to Figure~\ref{eq:plan} are shown in bold.
+The only constraint added to the set of constraints between the happenings is \textit{control parameter support} constraint ($P12$). This constraint ensures that the value of a control parameter stays constant during the execution of the action. In P12, $dur_{ps^a_i}$ refers to the duration variable of the action $a$ containing the control parameter.
 
 \begin{figure*}[thb!]
 \begin{minipage}[t]{0.39\linewidth}
@@ -238,8 +237,6 @@ Adding control parameters to durative actions also affects the encoding of the c
 \caption{Reduction of PDDL+ planning problem with control parameters $\Pi+$ to SMT.}
 \label{eq:plan2}
 \end{figure*}
-
-The only constraint added to the set of encodings regarding the constraints between the happenings is \text{control parameter support} constraint ($P12$). This constraint ensures that the value of a control parameter stays constant during the execution of the action. In P12, $dur_{ps^a_i}$ refers to the duration variable of the action $a$ containing the control parameter.
 
 \subsection{Encoding of the cashpoint problem}
 
