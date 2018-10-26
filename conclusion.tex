@@ -1,6 +1,12 @@
-\section{Conclusion}\label{sec:conclusion}
+\section{Conclusions and Future Work}\label{sec:conclusion}
 
-In this paper we presented a new approach for PDDL+ planning that can handle the whole set of PDDL+ features, respecting Fox and Long’s semantics.
-The approach we proposed is an SMT encoding of PDDL+ domains that correctly captures the must semantics of PDDL+, which constrains how processes and events interact with each other and with actions. The encoding is general and can be used with any SMT solver in the theory of quantifier-free nonlinear arithmetic.
-Experimental results show that the approach dramatically outperforms existing work in finding plans for solvable problems, and it is efficient also in proving plan-non-existence.
+In this paper we presented a new approach for PDDL+ planning that can handle the whole set of PDDL+ features, respecting Fox and Long’s semantics. The approach we proposed uses an SMT encoding of PDDL+ domains that correctly captures the must semantics of PDDL+. The encoding is based on the notion of \textit{happenings}, such that the variables of the SMT formula represent the state variables, and active events, actions, and processes within happenings. Between happenings there is only continuous numeric change. Constraints between variables in different happenings ensure any satisfying assignment to the SMT formula represents a valid plan trace.
 
+The planning approach is an iterative deepening search, based on approaches to planning as SAT~\cite{nab02,rin06}. SMTPlan iteratively increases the bound on the number of happenings until a solution is found.
+The encoding is general and can be used with any SMT solver in the theory of quantifier-free nonlinear arithmetic.
+
+Experimental results show that the approach dramatically outperforms existing work in finding plans for solvable PDDL+ problems, and is also efficient in proving plan-non-existence. The approach differs from traditional state-based search approaches to planning in that the performance is not affected by the duration of the plan, and only linearly by the number of objects in the problem instance. However, experimental results demonstrate that the scalability of the approach is limited by the size of the discrete search space.
+
+We also showed how recent work on infinite-domain parameters, called \textit{control parameters}, can be introduced into the SMTPlan encoding. The SMT-based approach to planning is a natural fit for planning with control parameters, and our experiments demonstrate the beneficial effects.
+
+In our future work we intend to discover how approaches to planning as SAT, such as plan step semantics and embedded planning heuristics, can be used to help SMTPlan scale to problems with larger discrete state-spaces. In addition, we intend to explore the possibility of combined planning approaches, using state-based search to handle large discrete state-spaces, while using SMTPlan's novel approach for handling continuous numeric change. The restriction of SMTPlan to only polynomial nonlinear continuous change is a limitation of the CAS, which can only handle the indefinite integration of polynomials. In future work we plan to relax this restriction, and allow SMTPlan to handle a larger collection of nonlinear effects.
