@@ -53,9 +53,9 @@ Planning in hybrid systems is important for dealing with real-world applications
 %
 Motivated by numerous SAT-based planning approaches, we propose an approach to PDDL+ planning through SMT, describing an SMT encoding that captures all the features of the PDDL+ problem as published by Fox and Long. The encoding can be applied on domains with nonlinear continuous change. We describe the encoding in detail and provide in-depth examples.
 %
-We apply this encoding in a simple planning algorithm, demonstrating excellent results on a set of benchmark problems. 
+We apply this encoding in an iterative deepening planning algorithm, based on approaches to planning as SAT, and demonstrating excellent results on a set of benchmark PDDL+ problems. We also present experiments which explore the performance of the proposed approach on temporal planning problems, analysing its strengths and weaknesses.
 %
-We further extend the encoding to include planning with control parameters. The extended encoding allows the definition of actions to include infinite domain parameters, called control parameters. We provide an example problem with control parameters and show how it can be encoded and solved in SMT.
+We further extend the encoding to include planning with control parameters. The extended encoding allows the definition of actions to include infinite domain parameters, called control parameters. We extend the proposed encoding to capture control parameters and provide an example problem with control parameters to demonstrate the encoding. We present experiments on a set of problems with control parameters to demonstrate the positive effect they provide to the approach of planning through SMT.
 \end{abstract}
 
 \input{introduction}
