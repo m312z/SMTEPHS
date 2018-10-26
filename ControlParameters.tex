@@ -22,83 +22,89 @@ In the cashpoint problem, suppose that we want to go to a pub. Figure~\ref{fig:c
 
 The amount of money that the we withdraw from the cash machine is defined as a control parameter whose value is chosen by the planner. The proposed PDDL domain with control parameters is an extended version of PDDL2.1 in which durative actions can include an additional field for control parameters.
 
-Figure~\ref{fig:actions cashpoint domain} illustrates the domain for this problem. The action $(withdraw\_money)$ is a durative action with the control parameter $(?cash - number)$. In this action, the control parameter is used in the effects of the action and not in the conditions. As the effect of this action, the numeric variable $(inpocket \ \ ?z)$ where $?z$ is the type of currency, is increased by the value of the control parameter. Similar to that the numeric variable $(maxwithdraw \ \ ?b \ \ ?z)$ where $?b$ is the location that we withdraw money from (bank1 or bank2), has been decreased by the same value.
+Figure~\ref{fig:actions cashpoint domain} shows a fragment of the domain for this problem. The action $(withdraw\_money)$ is a durative action with the control parameter $(?cash - number)$. In this action, the control parameter is used in the effects of the action and not in the conditions. As the effect of this action, the numeric variable $(inpocket)$ is increased by the value of the control parameter. Similar to that the numeric variable $(maxwithdraw \ ?b)$, where $?b$ is the location that we withdraw money from, has been decreased by the same value.
 
 \begin{figure}[thb]
 \scriptsize
 \begin{verbatim}
 (:durative-action withdraw_money
-:parameters (?b - location ?z - currency)
+:parameters (?p - person ?a - location)
 :control (?cash - number)
 :duration (= ?duration 2)
-:condition (and (over all (at ?b)) 
+:condition (and (over all (at ?p ?a)) 
                 (at start (>= ?cash 5))
                 (at start (<= ?cash 100))
-                (at start (>= (maxwithdraw ?b ?z) 0 ))
-                (at end (>= (maxwithdraw ?b ?z) 0))
                 (at start (available))
-                (at start (canwithdraw_money ?b))
-				)
+                (at start (canwithdraw_money ?a))
+                (at start(>= (maxwithdraw ?a) ?cash))
+            )
 :effect (and   	
+                (at start (decrease (maxwithdraw ?a) ?cash))
+                (at start (increase (inpocket ?p) ?cash))
                 (at start (not (available)))
-                (at start (increase (inpocket ?z) ?cash))
-                (at start (decrease (maxwithdraw ?b ?z) ?cash))
                 (at end (available))
         ))
 
         
 (:durative-action buy_snacks
-:parameters (?a - location ?z - currency)
+:parameters (?a - location ?p - person)
 :duration (= ?duration 1)
-:condition (and     (at start (at ?a))
-                    (over all (at ?a))
+:condition (and     (at start (at ?p ?a))
+                    (over all (at ?p ?a))
                     (at start (available))
-                    (at start (>= (inpocket ?z) 5))
-                    (at end (>= (inpocket ?z) 0))
-                    (at start (canbuy ?a ?z)) )
-:effect (and    (at start (decrease (inpocket ?z) 5)) 
+                    (at start (>= (inpocket ?p) 5))
+                    (at end (>= (inpocket ?p) 0))
+                    (at start (canbuy ?a)) )
+:effect (and    (at start (decrease (inpocket ?p) 5)) 
                 (at start (not (available)))
                 (at end (gotsnacks))
                 (at end (available))
         ))
         
-(:durative-action check_pocket
-:parameters (?z - currency)
-:duration (<= ?duration 0.5)
-:condition (and     (at start (>= (inpocket ?z) 100) )
+(:durative-action buy_drinks
+:parameters (?a - location ?p - person)
+:duration (= ?duration 1)
+:condition (and     (at start (at ?p ?a))
+                    (over all (at ?p ?a))
                     (at start (available))
-                    (at end (>= (inpocket ?z) 0) )  )
-:effect (and        
-                    (at start (not (available)))
-                    (at end (have_enough ?z)) 
-                    (at start (decrease (inpocket ?z) 100))
-                    (at end (available)) ) )      
-
-) 
+                    (at start (>= (inpocket ?p) 4))
+                    (at end (>= (inpocket ?p) 0))
+                    (at start (canbuy ?a)) )
+:effect (and    (at start (decrease (inpocket ?p) 4)) 
+                (at start (not (available)))
+                (at end (gotdrinks))
+                (at end (available))
+        ))
 \end{verbatim}
-\caption{Main actions of the cashpoint domain}
+\caption{Three operators from the cashpoint domain, for withdrawing money, buying snacks, and buying drinks.}
 \label{fig:actions cashpoint domain}
 \end{figure}
 
 Figure~\ref{fig:cashpoint problem} shows an example problem file for the cashpoint domain. In the problem file for this example there are five locations. Two banks, each of which has a maximum amount of \pounds200 to withdraw, a supermarket where snacks can be purchased, the pub, and the home. Later, we use this example to show the encoding of control parameters.
 
 \begin{figure}[thb]
-\scriptsize
+\small
 \begin{verbatim}
-   (:objects pub supermarket home - location
-           bank1 bank2 - location
-           pounds - currency)
+   (:objects
+        emre - person
+        pub supermarket home - location
+        bank1 bank2 - location)
  
-   (:init (at  home)
-        (canbuy supermarket pounds)
+   (:init
+        (at emre home)
+        (canbuy supermarket)
         (canwithdraw_money bank1)
  		(available)
-        (= (maxwithdraw bank1 pounds) 200)
-        (= (maxwithdraw bank2 pounds) 200)
-        (= (inpocket pounds) 2)
+        (= (maxwithdraw bank1) 200)
+        (= (maxwithdraw bank2) 200)
+        (= (inpocket emre) 2)
  )
 		
- (:goal (and (have_enough pounds) (gotsnacks) (at pub) (>= (inpocket pounds) 20) ))
+ (:goal (and
+        (gotsnacks)
+        (at emre pub)
+        (>= (inpocket emre) 120)
+    ))
 )      
 \end{verbatim}
 \caption{An example problem file for the cashpoint domain.}
@@ -240,42 +246,48 @@ The only constraint added to the set of constraints between the happenings is \t
 
 \subsection{Encoding of the cashpoint problem}
 
-Considering the domain shown above, we introduce a variable $cp\_cash_t$ for each happening as the control parameter associated with the durative action. In this domain we only have one durative action with control parameter:
+Considering the domain shown above, we introduce a variable $d^a_t$ for each happening and control parameter associated with a durative action. In this domain we have two durative actions with a control parameter:
 $$
-(withdraw\_money \ \  bank1 \ \  pounds)
+(withdraw\_money\ emre\ bank1), (withdraw\_money\ emre\ bank2)
 $$
-The numeric variables associated with this action $(maxwithdraw \ \ \ bank1 \ \ \ pounds)$ and  $(inpocket \ \ \ pounds)$ are affected by the control parameter variable. Constraint $H10$ is modelled as the following constraint, which illustrates the effect of the control parameters on the numeric variables.
-$$
-\begin{array}{c}
-(withdraw\_money\ bank1\ pounds)_{sta,t}  \rightarrow \\
-(maxwithdraw\ bank1\ pounds)_{1,t} = ((maxwithdraw\ bank1\ pounds)_{0,t} - cp\_cash_0) \\
-\wedge \\
-(withdraw\_money\ bank1\ pounds)_{sta,t}  \rightarrow \\
-(inpocket\ pounds)_{1,t} = ((inpocket\ pounds)_{0,t} + cp\_cash_0) \\
-\end{array}
-$$
-The upper bound $u_d$ is 100 and the lower bound $l_d$ is 5. Using these bounds we can write the equations $H15$ and $H16$ as :
+Therefore two new variables are added in each happening:
 $$
 \begin{array}{l}
-(withdraw\_money \, bank1 \, pounds)_{sta,t}  \rightarrow (cp\_cash_0) >=  5 \\
-(withdraw\_money \, bank1 \, pounds)_{sta,t}  \rightarrow (cp\_cash_0) <=  25  \\
+cash^{(withdraw\_money\ emre\ bank1)}_t\\
+cash^{(withdraw\_money\ emre\ bank1)}_t
+\end{array}
+$$
+For the first action, $(withdraw\_money\ emre\ bank1)$, there are two numeric variables affected by the associated control parameter. These are are $(maxwithdraw \ bank1)$ and  $(inpocket \ emre)$. Constraint $H10$ is modelled as the following constraint, which illustrates the effect of the control parameters on the numeric variables.
+$$
+\begin{array}{c}
+(withdraw\_money\ emre\ bank1)_{sta,t}  \rightarrow \\
+(maxwithdraw\ bank1)_{1,t} = (maxwithdraw\ bank1)_{0,t} - cash^{(withdraw\_money\ emre\ bank1)}_t) \\
+\wedge \\
+(withdraw\_money\ emre\ bank1)_{sta,t}  \rightarrow \\
+(inpocket\ emre)_{1,t} = ((inpocket\ emre)_{0,t} + cash^{(withdraw\_money\ emre\ bank1)}_t) \\
+\end{array}
+$$
+According to the conditions of $withdraw\_money$ in the domain, the upper bound $u_d$ on the control parameter is 100 and the lower bound $l_d$ is 5. Using these bounds we can write the equations $H15$ and $H16$ as :
+$$
+\begin{array}{l}
+(withdraw\_money\ emre\ bank1)_{sta,t}  \rightarrow cash^{(withdraw\_money\ emre\ bank1)}_t >=  5 \\
+(withdraw\_money\ emre\ bank1)_{sta,t}  \rightarrow cash^{(withdraw\_money\ emre\ bank1)}_t <=  100  \\
 \end{array}
 $$
 
-The plan found by the SMTPlan for this domain and problem file is shown in Figure~\ref{fig:cashpoint plan}. The reason that the planner suggests to withdraw \pounds99.5, is that the action $check\_pocket$ has a precondition $(inpocket \ \ ?z) >= 100$ and the initial value for $(inpocket \ \ pounds)$ is 2. The solution found by the SMT solver is not guaranteed to be optimal with respect to time. This is demonstrated by the plan shown in Figure~\ref{fig:cashpoint plan}, in which there is a 2-second gap between the end of the first withdraw action and the beginning of the second. This is because the only constraint is that the two happenings are separated by at least $\epsilon$, and the SMT solver is left to choose any valid value. It is possible to include a metric for the SMT solver to optimise; for example, the time point of the final happening. However, this does not guarantee optimality with respect to plan duration, as increasing the bound on the number of happenings might lead to a solution with shorter duration.
+The plan found by the SMTPlan for this domain and problem file is shown in Figure~\ref{fig:cashpoint plan}. The solution found by the SMT solver is not guaranteed to be optimal with respect to time. This is demonstrated by the plan shown in Figure~\ref{fig:cashpoint plan}, in which there is a 2-second gap between the end of the first withdraw action and the beginning of the second. This is because the only constraint is that the two happenings are separated by at least $\epsilon$, and the SMT solver is left to choose any valid value. It is possible to include a metric for the SMT solver to optimise; for example, the time point of the final happening. However, this does not guarantee optimality with respect to plan duration, as increasing the bound on the number of happenings might lead to a solution with shorter duration.
 
 \begin{figure}[thb]
 \small
 \begin{verbatim}
-0.0:	(goto home bank1) [5.0]
-7.0:	(withdraw_money bank1 pounds) [2.0] (?cash [24.0])
-11.0:	(withdraw_money bank1 pounds) [2.0] (?cash [99.5])
-15.0:	(check_pocket pounds) [0.25]
-17.25:	(goto bank1 supermarket) [5.0]
-24.25:	(buy_snacks supermarket pounds) [1.0]
-27.25:	(goto supermarket pub) [5.0]
+0.0:	(goto emre home bank1) [5.0]
+7.0:	(withdraw_money emre bank1) [2.0] (?cash [24.0])
+11.0:	(withdraw_money emre bank1) [2.0] (?cash [99.5])
+15.0:	(goto emre bank1 supermarket) [5.0]
+22.0:	(buy_snacks supermarket emre) [1.0]
+25.0:	(goto emre supermarket pub) [5.0]
 \end{verbatim}
-\caption{The plan found by the SMTPlan for the cashpoint domain}
+\caption{The plan found by the SMTPlan for the example cashpoint problem.}
 \label{fig:cashpoint plan}
 \end{figure}
 
@@ -292,54 +304,46 @@ x_2 &  x_3 \\
 t_2:=7 & t_3:=9 \\
 \hline
 \begin{array}{lr}
-available_{0,2} :=1 \\
-available_{1,2} :=0 \\
+(available)_{0,2} :=1 \\
+(available)_{1,2} :=0 \\
 \end{array}
 &
 \begin{array}{lr}
-available_{0,3} :=0 \\
-available_{1,3} :=1 \\
+(available)_{0,3} :=0 \\
+(available)_{1,3} :=1 \\
 \end{array}
 \\ \hline
 \begin{array}{lr}
-maxwithdraw_{0,2} :=200 \\
-maxwithdraw_{1,2} := 176 \\
-inpocket_{0,2} := 0 \\
-inpocket_{1,2} := 24 \\
+(maxwithdraw\ bank1)_{0,2} :=200 \\
+(maxwithdraw\ bank1)_{1,2} := 176 \\
+(inpocket\ emre)_{0,2} := 0 \\
+(inpocket\ emre)_{1,2} := 24 \\
 \end{array}
 &
 \begin{array}{lr}
-maxwithdraw_{0,3} := 176 \\
-maxwithdraw_{1,3} := 176 \\
-inpocket_{0,3} := 24 \\
-inpocket_{1,3} := 24 \\
+(maxwithdraw\ bank1)_{0,3} := 176 \\
+(maxwithdraw\ bank1)_{1,3} := 176 \\
+(inpocket\ emre)_{0,3} := 24 \\
+(inpocket\ emre)_{1,3} := 24 \\
 \end{array}
 \\ \hline
 \begin{array}{lr}
-withdraw\_money_1 := 1 \\
+(withdraw\_money\ emre\ bank1)_{sta,2}:= 1 \\
+(withdraw\_money\ emre\ bank1)_{end,2} := 0\\
 \end{array}
 &
 \begin{array}{lr}
-withdraw\_money_2 := 0 \\
+(withdraw\_money\ emre\ bank1)_{sta,3}:= 0 \\
+(withdraw\_money\ emre\ bank1)_{end,3} := 1\\
 \end{array}
 \\ \hline
 \begin{array}{lr}
-withdraw\_money_{sta,2}:= 1 \\
-withdraw\_money_{end,2} := 0\\
-\end{array}
-&
-\begin{array}{lr}
-withdraw\_money_{sta,2}:= 0 \\
-withdraw\_money_{end,2} := 1\\
-\end{array}
-\\ \hline
-\begin{array}{lr}
-withdraw\_money_{dur,1} := 2\\
+(withdraw\_money\ emre\ bank1)_{dur,2} := 2\\
 
 \end{array}
 &
 \begin{array}{lr}
-withdraw\_money_{dur,2} :=0\\
+(withdraw\_money\ emre\ bank1)_{dur,3} :=0\\
 \end{array}
 \\ \hline
 \end{tabular}

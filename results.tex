@@ -252,36 +252,34 @@ Total              & 100 & 12          & 74          & 55          & \textbf{76}
 
 \subsection{Domains with Control Parameters}\label{sec:eval_cp}
 
-In this section we have designed a set of experiments to show how introducing control parameters affects the performance of SMTPlan. We used the \textit{cashpoint} domain for these experiments, solving problems with SMTPlan on two different variants of the domain: one including control parameter variables and the other one without. For both domains we considered a set of problem instances that get more difficult gradually. We increased the difficulty of the problems in two ways: first, by adding new objects in the problem file; and second, by considering scenarios in which we have more actions in the domain file and in order to reach the goal we need to apply these new actions. 
+In this section we have designed a set of experiments to show how introducing control parameters affects the performance of SMTPlan. We used the \textit{cashpoint} domain for these experiments, solving problems with SMTPlan on two different variants of the domain: one including control parameter variables and the other one without. Similarly to Savas et al.~\cite{savas2016planning}, in the domain without control parameters we add a number of \textit{withdraw\_money} actions with fixed withdrawal values, namely $\{1, 5, 10, 20\}$. For both domains we considered a set of problem instances that get more difficult gradually. Six sets of problem instances were generated with an increasing number of bank locations (from 1 to 6). In each problem every bank must be visited to achieve the goal. Problems within each set increase in difficulty due to additional locations and goals.
 
-A set of problem instances was created with the goal to have a specific amount of money, indicated by the variable  $(inpocket \ pounds)$ in the goal state. The goal increases from $( = (inpocket \ pounds)\  10) $  to  $( = (inpocket \ pounds)\ 100)$ in increments of 10.
-\textcolor{red}{Moreover, in order to make more difficult problems, the number of objects in each problem file is increased. We first start the problems with just one bank, then increase them to 6 banks. For all the experiments in this section, we have used these set of benchmarks.}
+The results for these experiments are shown in Table~\ref{tab:table_results_cp} and Figure~\ref{fig:CP_results}. Table~\ref{tab:table_results_cp} shows the number of problems that could be solved with and without control parameters. By using control parameters, repeated applications of the same action can be avoided, lowering the number of required happenings. This allows SMTPlan to solve many more problems.
 
-\textcolor{red}{We also added more propositions to the goal state, which leads to plans with more actions. The goal of the first scenario is just to withdraw money. Then, we gradually make increase the difficulty of the domain by adding new actions. The next considered scenario is a domain in which we need to go from home to bank and then withdraw money. For the third case we considered that we need to go to the pub at the end and in the last scenario we need to go the supermarket and get some snacks as well.
-%In the first scenario, the goal was to have specific amount of money and for this we just need to apply one type of action $(withdraw\_money)$. Then we run the same domain for several problems and increased the objects in each problem instance (we increased the number of banks in each problem and also designed the problem in the way that in order to have enough $(inpocket \ pounds)$ we need to withdraw from all the banks). Then we made the problem harder in the second scenario by adding a new goal that we are at home and we want to have specific amount of money. In order to achieve the goal we need to apply two actions $(go\_to)$ and $(withdraw\_money)$. Then we run them with the same set of problems that was getting hard gradually. Then for the third scenario, we changed the problem file and added a new proposition to the goal that we need to be at pub at the end. Then at the 4th, 5th and 6th scenarios we add the facts that we need to buy snacks, drinks and shoes from supermarket gradually and run them with the same set of problems. 
-The result for these experiments are shown in~\ref{fig:CP_results}. The $y$ axis shows the results of the experiments for domains without control parameters and the $x$ axis is for domains with control parameters. The time given to the solver for these set of experiments was 3600 seconds. As we can see on the graph, the time to solve the problems without control parameters are much longer compare to the domains with control parameters.
-Moreover, the number of problems that domain's with control parameters can solve is compared in Table~\ref{tab:table_results_cp}.}
+Figure~\ref{fig:CP_results} compares the time taken to solve problems that were solved both with and without control parameters. As we can see on the graph, the time to solve the problems without control parameters is generally much longer. However, in smaller problems the overhead of introducing the control parameter variables and constraints leads to longer solution times.
 
 \begin{figure}[!ht]
 \centering
 \includegraphics[width=0.60\textwidth]{diagrams/CP_results.png}
-\caption{The results of running SMTPlan for cashpoint example. The experiment compares the time taken to solve the cashpoint problems using two domains: (a) the domain without having control parameter variables (b) same domain with durative action which have control parameters}
+\caption{Comparison of time taken to solve problems in the \textit{cashpoint} domain with and without control parameters.}
 \label{fig:CP_results}
 \end{figure}
 
 \begin{table}[!ht]
 \centering
-\begin{tabular}{|c|c|c|c|}
+\begin{tabular}{|cc|cc|}
 \hline
-\multirow{2}{*}{Domain} & \multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Total number \\ \\ of problems\end{tabular}} & \multicolumn{2}{c|}{Planner}                                                                                                                             \\ \cline{3-4} 
-                        &                                                                                         & \begin{tabular}[c]{@{}c@{}}SMTPlan\\ with control parameters\end{tabular} & \begin{tabular}[c]{@{}c@{}}SMTPlan\\ without control parameters\end{tabular} \\ \hline
-Domain0                 & 60                                                                                      & 50                                                                        & 39                                                                           \\ \hline
-Domain1                 & 40                                                                                      & 30                                                                        & 7                                                                            \\ \hline
-Domain2                 & 30                                                                                      & 20                                                                        & 4                                                                            \\ \hline
-Domain3                 & 20                                                                                      & 10                                                                        & 1                                                                            \\ \hline
+          &                & \multicolumn{2}{c|}{Problems Solved}  \\
+No. Banks & Total Problems & with CP          & without CP         \\ \hline
+1         & 60             & 40               & 16                 \\
+2         & 60             & 30               & 13                 \\
+3         & 60             & 20               & 8                  \\
+4         & 60             & 10               & 6                  \\
+5         & 60             & 10               & 4                  \\
+6         & 60             & 0                & 4                  \\
+\hline
 \end{tabular}
-
-\caption{Comparison of number of domains that can be solved by SMTPlan that has control parameters and without control parameters}
+\caption{Comparison of number of problems that can be solved by SMTPlan with and without control parameters.}
 \label{tab:table_results_cp}
 
 
