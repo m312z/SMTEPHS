@@ -20,7 +20,7 @@ In the cashpoint problem, suppose that we want to go to a pub. Figure~\ref{fig:c
 \label{fig:cashpoint}
 \end{figure}
 
-The amount of money that the we withdraw from the cash machine is defined as a control parameter whose value is chosen by the planner. The proposed PDDL domain with control parameters is an extended version of PDDL2.1 in which durative actions can include an additional field for control parameters.
+The amount of money that we withdraw from the cash machine is defined as a control parameter whose value is chosen by the planner. The proposed PDDL domain with control parameters is an extended version of PDDL2.1 in which durative actions can include an additional field for control parameters.
 
 Figure~\ref{fig:actions cashpoint domain} shows a fragment of the domain for this problem. The action $(withdraw\_money)$ is a durative action with the control parameter $(?cash - number)$. In this action, the control parameter is used in the effects of the action and not in the conditions. As the effect of this action, the numeric variable $(inpocket)$ is increased by the value of the control parameter. Similar to that the numeric variable $(maxwithdraw \ ?b)$, where $?b$ is the location that we withdraw money from, has been decreased by the same value.
 

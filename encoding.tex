@@ -255,7 +255,7 @@ Note that in this approach, the integration and differentiation required for P8,
 
 \subsection{SMTPlan Architecture} \label{sssec:SMTPlan_Archi}
 
-The encoding has been implemented in a planner, called {\sc SMTPlan}. The planner follows the procedure of {\sc SATPlan}, iteratively deepening on the number of happenings (as opposed to the number of steps). Given a planning problem $\Pi$, the algorithm of {\sc SMTPlan} is as follows:
+The encoding has been implemented in a planner, called SMTPlan. The planner follows the procedure of SATPlan, iteratively deepening on the number of happenings (as opposed to the number of steps). Given a planning problem $\Pi$, the algorithm of SMTPlan is as follows:
 
 \begin{enumerate}
 \item
@@ -286,7 +286,7 @@ $\pi \leftarrow extractPlan(M)$\tcp*{\small{Extract a plan from the satisfying a
 \textbf{return};
 }
 }
-\caption{{\sc SMTPlan}}
+\caption{SMTPlan}
 \label{alg:pseudo}
 \end{algorithm}
 
@@ -297,9 +297,9 @@ $\pi \leftarrow extractPlan(M)$\tcp*{\small{Extract a plan from the satisfying a
 \label{fig:SMTPlan}
 \end{figure}
 
-The indefinite integration and differentiation required for constraints enforcing the checking of invariant conditions (P8-P9) and continuous numeric change (P10-P11) is performed by extracting the expressions from the PDDL domain of $\Pi+$ and passing to the CAS (line 2). In the current implementation of {\sc SMTPlan} the CAS {\sc piranha} is used, as it is able to solve polynomial non-linear integrals. The resulting expressions are used in all subsequent encoding steps.
+The indefinite integration and differentiation required for constraints enforcing the checking of invariant conditions (P8-P9) and continuous numeric change (P10-P11) is performed by extracting the expressions from the PDDL domain of $\Pi+$ and passing to the CAS (line 2). In the current implementation of SMTPlan the CAS piranha is used, as it is able to solve polynomial non-linear integrals. The resulting expressions are used in all subsequent encoding steps.
 
-The implementation of the encoding step (line 4) uses the \textit{c++} interface of the SMT-solver {\sc z3}. This interface allows the planner to incrementally add constraints and call the solver. The benefit of this incremental solving is that each happening only needs to be encoded once, and the iterations are encoded in time linear to the size of the happening and independent of the number of happenings. For example, if an encoding with $4$ happenings was found to be unsatisfiable, then extending the encoding to $5$ happenings only requires adding the variables and constraints of happening $x_5$ to the $z3$ interface.
+The implementation of the encoding step (line 4) uses the \textit{c++} interface of the SMT-solver z3. This interface allows the planner to incrementally add constraints and call the solver. The benefit of this incremental solving is that each happening only needs to be encoded once, and the iterations are encoded in time linear to the size of the happening and independent of the number of happenings. For example, if an encoding with $4$ happenings was found to be unsatisfiable, then extending the encoding to $5$ happenings only requires adding the variables and constraints of happening $x_5$ to the $z3$ interface.
 
 Extracting the plan from the satisfying assignment (line 9) is performed by simply printing all the variables $a\in A_i$ for each $i=1\ldots n$ that are assigned \textit{true}. This corresponds with the actions applied in each happening in order to achieve the goal.
 
