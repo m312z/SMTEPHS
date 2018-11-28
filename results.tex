@@ -265,22 +265,25 @@ Figure~\ref{fig:CP_results} compares the time taken to solve problems that were 
 \label{fig:CP_results}
 \end{figure}
 
+
+
+% Please add the following required packages to your document preamble:
+% \usepackage{multirow}
 \begin{table}[!ht]
 \centering
-\begin{tabular}{|cc|cc|}
+\begin{tabular}{|c|c|c|c|}
 \hline
-          &                & \multicolumn{2}{c|}{Problems Solved}  \\
-No. Banks & Total Problems & with CP          & without CP         \\ \hline
-1         & 60             & 40               & 16                 \\
-2         & 60             & 30               & 13                 \\
-3         & 60             & 20               & 8                  \\
-4         & 60             & 10               & 6                  \\
-5         & 60             & 10               & 4                  \\
-6         & 60             & 0                & 4                  \\
-\hline
+\multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}No. \\ Banks\end{tabular}} & \multirow{2}{*}{\begin{tabular}[c]{@{}c@{}}Total \\ Problems\end{tabular}} & \multicolumn{2}{c|}{\begin{tabular}[c]{@{}c@{}}Problems \\ Solved\end{tabular}} \\ \cline{3-4} 
+                                                                      &                                                                            & \multicolumn{1}{l|}{With CP}          & \multicolumn{1}{l|}{Without CP}         \\ \hline
+1                                                                     & 60                                                                         & 40                                    & 16                                      \\ \hline
+2                                                                     & 60                                                                         & 30                                    & 13                                      \\ \hline
+3                                                                     & 60                                                                         & 20                                    & 8                                       \\ \hline
+4                                                                     & 60                                                                         & 10                                    & 6                                       \\ \hline
+5                                                                     & 60                                                                         & 10                                    & 4                                       \\ \hline
+6                                                                     & 60                                                                         & 0                                     & 0                                       \\ \hline
 \end{tabular}
 \caption{Comparison of number of problems that can be solved by SMTPlan with and without control parameters.}
 \label{tab:table_results_cp}
-
-
 \end{table}
+
+

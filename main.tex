@@ -10,6 +10,8 @@
 \usepackage[output-decimal-marker={,},exponent-product=\cdot]{siunitx}
 \usepackage{icomma}
 \usepackage{amsmath}
+\usepackage{rotating,color}
+
 
 \SetKwFor{Loop}{Loop}{}{EndLoop}
 
@@ -28,9 +30,9 @@
 \setlength{\pdfpagewidth}{8.5in}
 \setlength{\pdfpageheight}{11in}
 
-\def\year{2015}
+\def\year{2018}
 \pdfinfo{
-/Title (SMT Encodings for Planning for Hybrid Systems)
+/Title (Planning for Hybrid Systems via Satisfiability Modulo Theory)
 /Author (Parisa Zehtabi, Michael Cashmore, Daniele Magazzeni)
 }
 
@@ -38,9 +40,9 @@
 
 \begin{document}
 
-\title{SMT Encoding of Planning for Hybrid Systems}
+\title{Planning for Hybrid Systems via Satisfiability Modulo Theory}
 \author{\center
- Michael Cashmore \, Daniele Magazzeni \, Parisa Zehtabi \\
+ Michael Cashmore, Daniele Magazzeni, Parisa Zehtabi \\
 King’s College London, London, WC2R 2LS \\
 \textit{firstname.lastname@kcl.ac.uk} \\
 }
@@ -49,13 +51,13 @@ King’s College London, London, WC2R 2LS \\
 %\tableofcontents
 
 \begin{abstract}
-Planning in hybrid systems is important for dealing with real-world applications. PDDL+ supports this representation of domains with mixed discrete and continuous dynamics, and supports \textit{events} and \textit{processes} modelling exogenous change.
+Planning for hybrid systems is important for dealing with real-world applications, and PDDL+ supports this representation of domains with mixed discrete and continuous dynamics.
 %
-Motivated by numerous SAT-based planning approaches, we propose an approach to PDDL+ planning through SMT, describing an SMT encoding that captures all the features of the PDDL+ problem as published by Fox and Long. The encoding can be applied on domains with nonlinear continuous change. We describe the encoding in detail and provide in-depth examples.
+In this paper we present a new approach for planning for hybrid systems, based on encoding the planning problem as a Satisfiability Modulo Theory (SMT) formula. This is the first SMT encoding that can handle the whole set of PDDL+ features, and is implemented in the SMTPlan planner. The encoding is based on the notion of happenings, and can be applied on domains with nonlinear continuous change. We describe the encoding in detail and provide in-depth examples.
 %
-We apply this encoding in an iterative deepening planning algorithm, based on approaches to planning as SAT, and demonstrating excellent results on a set of benchmark PDDL+ problems. We also present experiments which explore the performance of the proposed approach on temporal planning problems, analysing its strengths and weaknesses.
+We apply this encoding in an iterative deepening planning algorithm, and demonstrate excellent results on benchmark PDDL+ problems. We also present experiments which explore the performance of the proposed approach on temporal planning problems, analysing its strengths and weaknesses.
 %
-We further extend the encoding to include planning with control parameters. The extended encoding allows the definition of actions to include infinite domain parameters, called control parameters. We extend the proposed encoding to capture control parameters and provide an example problem with control parameters to demonstrate the encoding. We present experiments on a set of problems with control parameters to demonstrate the positive effect they provide to the approach of planning through SMT.
+We further extend the encoding to include planning with control parameters. The extended encoding allows the definition of actions to include infinite domain parameters, called control parameters. We present experiments on a set of problems with control parameters to demonstrate the positive effect they provide to the approach of planning via SMT.
 \end{abstract}
 
 \input{introduction}

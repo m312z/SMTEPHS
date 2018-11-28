@@ -11,11 +11,11 @@ In the first part of this section we explain the \emph{Free Fall} problem, and l
 %\end{definition}
 %$\qed$	
 
-Our working example considers a ball that falls vertically under the influence of gravity ($g$) and bounces when it touches the floor. The goal is that a robotic hand catches the ball. Specific conditions will be defined for the robot which determines when to catch the ball (i.e. at a specific time or position, or after a specific number of bounces), as shown in Figure~\ref{fig:Freefall}. It is important to note that Figure~\ref{fig:Freefall} shows the real case of a bouncing ball, however in our working example the motion is idealised as other forces and their effects (i.e. air resistance) are assumed to be negligible (so the ball will bounce an infinite number of times and every time reach to its initial height). The ball can be released with an initial velocity of zero ($v_0 = 0$) or it can have an initial velocity of $v_0$.
+Our working example considers a ball that falls vertically under the influence of gravity ($g$) and bounces when it touches the floor. The goal is for a robotic hand to catch the ball. Specific conditions will be defined for the robot which determine when to catch the ball (i.e. at a specific time or position, or after a specific number of bounces), as shown in Figure~\ref{fig:Freefall}. It is important to note that Figure~\ref{fig:Freefall} shows the real case of a bouncing ball, however in our working example the motion is idealised as other forces and their effects (i.e. air resistance) are assumed to be negligible (so the ball will bounce an infinite number of times and every time reach to its initial height). The ball can be released with an initial velocity of zero ($v_0 = 0$) or it can have an initial velocity of $v_0$.
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.60\textwidth]{diagrams/Freefall.png}
+\includegraphics[width=0.60\textwidth]{diagrams/FreeFall2.png}
 \caption{Working example (Free Fall problem): indicates a ball that is released vertically from the initial height of $h_0$ and bounces as soon as it reaches the floor. The diagram shows two different goal conditions we can specify for the robot to catch the ball; at a specific height ($h_{goal}$) or at a specific time after releasing the ball ($t_{caught}$).}
 \label{fig:Freefall}
 \end{figure}
@@ -43,19 +43,19 @@ The hybrid automaton of the Free Fall problem is shown in Figure~\ref{fig:Free F
 \label{fig:Free Fall hybrid automaton}
 \end{figure*}
 
-Considering the dynamics of the problem, we have three discrete locations. The initial state which indicates our first discrete mode: the ball is held at the height $h_0$ and the velocity $v = v_0$ (this state is shown by the left circle in Figure~\ref{fig:Free Fall hybrid automaton}). As soon as the ball is released, a discrete transition moves the automaton to the next discrete location representing the moving state (this state is shown by the middle circle in Figure~\ref{fig:Free Fall hybrid automaton}). In this state, the height of the ball changes according the velocity $\dot{h}=v$, and the velocity changes according to acceleration $\dot{v}=a$. As soon as the height of the ball becomes zero ($h=0$), the ball bounces. A discrete transition negates the velocity.
+Considering the dynamics of the problem, we have three discrete locations. The initial state which indicates our first discrete mode: the ball is held at the height $h_0$ and the velocity $v = v_0$ (this state is shown by the left circle in Figure~\ref{fig:Free Fall hybrid automaton}). As soon as the ball is released, a discrete transition moves the automaton to the next discrete location representing the moving state (this state is shown by the middle circle in Figure~\ref{fig:Free Fall hybrid automaton}). In this state, the height of the ball changes according to the velocity $\dot{h}=v$, and the velocity changes according to acceleration $\dot{v}=a$. As soon as the height of the ball becomes zero ($h=0$), the ball bounces. A discrete transition negates the velocity.
 
 The robot can catch the ball as soon as the conditions of the goal state are satisfied. In Figure~\ref{fig:Free Fall hybrid automaton} this condition is that the ball is at a specific height $h=h_{goal}$. At this point, the hybrid automaton will move to the next discrete state which represents the state where the ball has been caught by the robot (this state is shown by the right circle in Figure~\ref{fig:Free Fall hybrid automaton}).
 
 \subsection{PDDL+ Model of the Free Fall Problem}
 
-In this section we describe how the hybrid automaton of the Free Fall problem can be written in PDDL+. A planning model represented in PDDL+ consists of the domain model and the problem instance. The domain model lists the action schema and the possible processes and events. The problem instance describes the objects, the initial state, and the goal state. The domain corresponding to the hybrid automaton in Figure~\ref{fig:Free Fall hybrid automaton} is shown in Figure~\ref{fig:freefall domain}, while the problem instance is shown in Figure~\ref{fig:freefall problem}. In this problem we include a single ball, \textit{ball1}, and define that the robot should catch the ball when the height of the ball is 5.
+In this section we describe how the hybrid automaton of the Free Fall problem can be written in PDDL+. A planning model represented in PDDL+ consists of the domain and the problem instance. The domain model lists the action schema and the possible processes and events. The problem instance describes the objects, the initial state, and the goal state. The domain corresponding to the hybrid automaton in Figure~\ref{fig:Free Fall hybrid automaton} is shown in Figure~\ref{fig:freefall domain}, while the problem instance is shown in Figure~\ref{fig:freefall problem}. In this problem we include a single ball, \textit{ball1}, and define that the robot should catch the ball when the height of the ball is 5.
 
 \begin{figure*}[thb]
 \small
 \begin{BVerbatim}
 (define (domain dropping_ball)
-(:requirements :fluents :typing :negative-preconditions)
+(:requirements :fluents :typing :durative-actions :time :negative-preconditions :duration-inequalities :timed-initial-literals) ;;:durative-actions :time :negative-preconditions :duration-inequalities
 
 (:types ball)
 (:predicates (holding ?b - ball) (caught ?b - ball))
@@ -85,7 +85,7 @@ In this section we describe how the hybrid automaton of the Free Fall problem ca
  :parameters (?b - ball)
  :precondition (and (< (velocity ?b) 0) (<= (height ?b) 0.000001))
  :effect (and 
-    (increase (number_of_bounces ?b) 1)
+    (increase (number_bounces ?b) 1)
     (assign (velocity ?b) (* -1 (velocity ?b))))
 )
 
@@ -93,13 +93,14 @@ In this section we describe how the hybrid automaton of the Free Fall problem ca
  :parameters (?b - ball)
  :precondition (and
     (>= (height ?b) (catch_height))
-    (<= (height ?b) (+ (catch_height) 0.1)
+    (<= (height ?b) (+ (catch_height) 0.1))
     (>= (number_bounces ?b) (catch_bounce)))
  :effect (and
     (holding ?b)
     (assign (velocity ?b) 0)
-    (caught ?b))
-))
+    (caught ?b)))
+)
+
 \end{BVerbatim}
 \caption{Simplified PDDL+ domain description for Free Fall.}
 \label{fig:freefall domain}
@@ -110,7 +111,7 @@ In this section we describe how the hybrid automaton of the Free Fall problem ca
 \small
 \centering
 \begin{BVerbatim}
-(define (problem 1_ball)
+(define (problem dropping_ball_1)
 (:domain dropping_ball)
 (:objects ball1 - ball)
 
@@ -139,5 +140,5 @@ Grounding the problem by applying the objects from the problem instance to the p
 \item The state in which $(holding\ ball1)$ is false and $(caught\ ball1)$ is true is not reachable from the initial state without first reaching the goal, and does not appear in the hybrid automaton.
 \end{itemize}
 
-The continuous change of the location \emph{Moving} is asserted by the process $(moving\ ball1)$, which is active while its preconditions, $(not (holding\ ball1))$ and $(>= (height\ ball1)\ 0)$, are satisfied. The event $(bounce\ ball1)$ has no effect upon the discrete state, instead affecting only the numeric variables and also increases the $(number_bounces)$. This event corresponds to the self-looping transition \textit{Bounce} in the hybrid automaton. As explained previously, an event is triggered as soon as its preconditions are satisfied. In this case, the event will be triggered as soon as the ball has reached the floor. This precondition is shown as $(<= \ (height \  ?b) \ 0.000001)$.
+The continuous change of the location \emph{Moving} is asserted by the process $(moving\ ball1)$, which is active while its preconditions, $(not (holding\ ball1))$ and $(>= (height\ ball1)\ 0)$, are satisfied. The event $(bounce\ ball1)$ has no effect upon the discrete state, instead affecting only the numeric variables and also increases the $(number\_bounces)$. This event corresponds to the self-looping transition \emph{Bounce} in the hybrid automaton. As explained previously, an event is triggered as soon as its preconditions are satisfied. In this case, the event will be triggered as soon as the ball has reached the floor. This precondition is shown as $(<= \ (height \  ?b) \ 0.000001)$. Note that in the automaton, the transition \emph{Bounce} is a must transition, in the sense that is a must be triggered as soon as $h=0$ as this violates the invariant of \emph{Moving}. Similarly, events in PDDL+ follow a must semantics and are triggered as soon as their preconditions are satisfied. 
 %The reason for modelling this precondition as an inequality less than or equal to a small constant is to get a valid plan using the validator~\cite{howey2004val}.

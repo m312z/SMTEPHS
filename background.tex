@@ -4,7 +4,8 @@ In this section, we introduce the theoretical foundations of hybrid systems, nam
 
 \subsection{Hybrid Systems}
 
-A hybrid system is a system where there are both continuous variables and discrete logical modes of operation. It represents a powerful model to describe the dynamic behaviour of modern engineering artefacts. Hybrid systems frequently occur in practice, e.g., in robotics or embedded systems. Dealing with hybrid systems is becoming more and more an important challenge, as many real-world scenarios feature a mixture of discrete and continuous behaviours. Some example applications include coordination of activities of a planetary lander, oil refinery management, autonomous vehicles, chemical plant management~\cite{chemical}, planning for smart grids~\cite{ucp}, and battery management~\cite{battery}. Such scenarios motivate the need to reason with mixed discrete-continuous domains.
+A hybrid system is a system where there are both continuous variables and discrete logical modes of operation. It represents a powerful model to describe the dynamic behaviour of modern engineering artefacts. %Hybrid systems frequently occur in practice, e.g., in robotics or embedded systems. 
+%Dealing with hybrid systems is becoming more and more an important challenge, as many real-world scenarios feature a mixture of discrete and continuous behaviours. Some example applications include coordination of activities of a planetary lander, oil refinery management, autonomous vehicles, chemical plant management~\cite{chemical}, planning for smart grids~\cite{ucp}, and battery management~\cite{battery}. Such scenarios motivate the need to reason with mixed discrete-continuous domains.
 
 The theory of hybrid automata, introduced by Henzinger~\cite{henzinger}, represents a well-defined formalism for describing hybrid systems. Intuitively, hybrid automata are finite state automata extended with continuous variables that evolve over time. More formally, we have the following:
 
@@ -34,7 +35,7 @@ An example is the hybrid automaton for a thermostat shown in Figure~\ref{fig:the
 
 \subsection{PDDL2.1 and PDDL+ Planning}
 
-Application of planners in real world problems has challenged the limitations of PDDL and increased the necessity of dealing with time and resources. This lead to the development of PDDL2.1~\cite{fox03} as the extension of PDDL able to model temporal domains. PDDL2.1 has been extended to PDDL+~\cite{pddl+} to enable the modelling of mixed discrete-continuous domains. In this section we first we discuss the semantics of PDDL2.1 and later describe the extensions that have been added as PDDL+.
+Application of planners in real world problems has challenged the limitations of PDDL and increased the necessity of dealing with time and resources. This lead to the development of PDDL2.1~\cite{fox03} as the extension of PDDL able to model temporal domains. PDDL2.1 has been extended to PDDL+~\cite{pddl+} to enable the modelling of mixed discrete-continuous domains. In this section we first discuss the semantics of PDDL2.1 and later describe the extensions that have been added in PDDL+.
 
 \begin{definition}[PDDL2.1 Planning]\label{def:pddl21}
 A PDDL2.1 planning problem is a tuple $\Pi:=\{P,V,A,I,G\}$, where $P$ is a set of propositions; $V$ is a vector of real variables, called fluents; both are manipulated by $A$, a set of durative and instantaneous actions.
@@ -88,7 +89,7 @@ Given the PDDL+ semantics for modelling hybrid systems, finding an efficient pla
 
 \subsection{Planning as Satisfiability}
 
-The problem of determining SAT is the problem of finding an assignment of truth values to variables in order to make a set of propositional formulae true. The problem stated as: given $\phi$ a Boolean expression with variables $X: \{ x_1, x_2, ... , x_n\}$, is it true that there exists an assignment to variables $X$ such that $\phi$ is satisfied? In other words:
+The problem of determining Boolean Satisfiability Problem (SAT) is the problem of finding an assignment of truth values to variables in order to make a set of propositional formulae true. The problem is stated as: given a Boolean expression $\phi$ with variables $X: \{ x_1, x_2, ... , x_n\}$, there exists an assignment to variables $X$ such that $\phi$ is satisfied? In other words:
 $$
 \exists \, x_1, x_2, ... , x_n \quad\phi?
 $$
@@ -98,11 +99,11 @@ $$
 $$
 is false, since there are no assignments to the three variables $x_1, x_2, x_3$ that will satisfy $\phi$.
 %
-A SAT solver solves the decision problem and if the expression is satisfiable, often returns an example satisfying assignment. Kautz and Selman~\cite{kau92} formalised propositional planning as a Boolean Satisfiability (SAT) problem in the following way.
+In the context of planning, we are focusing on SAT solvers that solve the decision problem and if the expression is satisfiable, return an example satisfying assignment. Kautz and Selman~\cite{kau92} formalised propositional planning as a Boolean Satisfiability (SAT) problem in the following way.
 
 First, the classical planning problem for a fixed horizon $n$ is modelled by defining $n$ copies of the Boolean variables which describe the state and actions, and unrolling $n$ times the transition relation that holds between states. This gives a set of variables ($X$) and constraints between them ($\phi$). A satisfying assignment to the variables corresponds to a plan trace.
 
-In more detail, the set of variables $X$ comprises one Boolean variable for each $a\in A$, and each $p\in P$ at each time-step $t_0, \ldots, t_n$. In propositional planning, there are no numeric variables $v\in V$. Constraints are added to $\phi$, asserting:
+In more detail, the set of variables $X$ comprises one Boolean variable for each $a\in A$, and each $p\in P$ \footnote{Similar to Definition~\ref{def:pddl21}, in classical planning we have a set of actions and a set of propositions which are shown as $A$ and $P$, respectively.} at each time-step $t_0, \ldots, t_n$. In propositional planning, there are no numeric variables $v\in V$. Constraints are added to $\phi$, asserting:
 \begin{itemize}
 \item The initial state holds at time-step $0$, and goals at time-step $n$.
 \item If an action is true, then its preconditions hold in that time-step.

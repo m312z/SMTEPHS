@@ -1,12 +1,12 @@
 \section{Planning with Control Parameters as SMT}\label{sec:control_parameters}
 
-PDDL is known as an expressive modelling language, however it enforces a significant limitation on the modelling of durative actions, restricting the action parameters to choose their values from finite domains. The parameter domains for actions are specified in the problem description, enumerated as a list of objects. Using this enumeration, the action schemes can be grounded, producing a finite set of grounded actions.
+PDDL+ is known as an expressive modelling language, however it enforces a significant limitation on the modelling of actions, restricting the action parameters to choose their values from finite domains. The parameter domains for actions are specified in the problem description, enumerated as a list of objects. Using this enumeration, the action schemes can be grounded, producing a finite set of grounded actions.
 %
 The only exception to finite domain parameters, introduced in PDDL2.1, is the duration of durative actions. The duration of a durative action can be chosen by the planner. This makes possible the modelling of duration dependent effects. Without the flexible duration parameter, the state space is always locally finite, which is to say that only finitely many states are reachable from a given initial state, using plans bounded by a given finite length. The addition of numeric state variables to the classical propositional language allows for the construction of an infinite state space~\cite{savas2016planning}.
 
 Savas et al.~\cite{savas2016planning} introduces new set of numeric action parameters called \textit{control parameters}: a generalised version of the duration parameter, which allows the planner to choose their values from an infinite domain. The control parameters can appear both in the conditions and the effects of a durative action. Control parameters as described by Savas et al. are constrained with an upper bound and a lower bound in the domain file. The main example used by Savas et al. is a domain which includes the action of withdrawing cash from an ATM (referred to as the \textit{cashpoint} example). Choosing the value of the withdrawal is a numeric control parameter in this action. Without this numeric control parameter the amount of withdrawal would have to be modelled by a set of actions discretising the real-valued parameter, or by introducing actions to increase and decrease the amount of withdrawal by a fixed step size. In either case, the amount of withdrawal is restricted to a discretisation and the number of actions is increased.
 
-In this section we briefly describe how PDDL is extended to include control parameters, and later we show the extension to our SMT encoding for the domains with control parameters. We use the \textit{cashpoint} domain as a running example throughout the section.
+In this section we briefly describe how PDDL2.1 is extended to include control parameters, and later we show the extension to our SMT encoding for the domains with control parameters. We use the \textit{cashpoint} domain as a running example throughout the section.
 
 \subsection{Cashpoint Problem}
 
@@ -111,7 +111,7 @@ Figure~\ref{fig:cashpoint problem} shows an example problem file for the cashpoi
 \label{fig:cashpoint problem}
 \end{figure}
 
-\subsection{Encoding of PDDL Domains with Control Parameters}
+\subsection{Encoding of PDDL2.1 Domains with Control Parameters}
 
 In this section we describe in detail how we extend our previous encoding described in Section~\ref{sec:enc} to handle actions with control parameters. First, we discuss the modifications over the definition of a single happening by introducing control parameters and later we extend these changes to the constraints between happenings.
 
@@ -192,14 +192,14 @@ By introducing the control parameter variables, the constraints over a happening
 %\item \bm{$\bigwedge_{{a_t\in A}| d^a_t \in \mathit{cparam_a}} a_t \rightarrow{d^a_t >= l_d \in L_d}$ \quad \forall  ${d^a_t\in cparam_a}$}
 \end{enumerate}}
 % \end{minipage}
-\caption{Reduction of a PDDL+ happening with control parameters to SMT.}
+\caption{Encoding of a PDDL+ happening with control parameters to SMT.}
 \label{eq:state2}
 \end{figure*}
 
 Within a happening, the structure of most of the constraints remain the same. However we need to add the constraints associated with the lower and upper bounds of control parameters (shown in equations $H15$ and $H16$). These constraints state that when the action is applied, the control parameter is bounded by its constant upper and lower bounds $u_d\in U_d$ and $l_d \in L_d$, respectively. In addition, control parameters can appear in the conditions or effect of a durative action. Therefore $H9$ and $H10$ are also affected by control parameters. The control parameter variables $d_t\in D_t$ can be used directly in these constraints.
 
 Adding control parameters to durative actions also affects the encoding of the constraints between the happenings explained in section~\ref{sec:enc_problem}. Figure~\ref{eq:plan2} shows these equations. The changes compared to Figure~\ref{eq:plan} are shown in bold.
-The only constraint added to the set of constraints between the happenings is \textit{control parameter support} constraint ($P12$). This constraint ensures that the value of a control parameter stays constant during the execution of the action. In P12, $dur_{ps^a_i}$ refers to the duration variable of the action $a$ containing the control parameter.
+The only constraint added to the set of constraints between the happenings is \textit{control parameter support} constraint ($P12$). This constraint ensures that the value of a control parameter stays constant during the execution of the action. In P12, $dur_{a_i}$ refers to the duration variable of the action $a$ containing the control parameter.
 
 \begin{figure*}[thb!]
 \begin{minipage}[t]{0.39\linewidth}
@@ -240,7 +240,7 @@ The only constraint added to the set of constraints between the happenings is \t
  % control parameter
  \item \bm{$\bigwedge_{i=1}^{n-1} \bigwedge_{d^a_t \in D_t} (dur_{a_i}>0)  \rightarrow (d^a_i = d^a_{i+1})$}
 \end{enumerate}
-\caption{Reduction of PDDL+ planning problem with control parameters $\Pi+$ to SMT.}
+\caption{Encoding of PDDL+ planning problem with control parameters $\Pi+$ to SMT.}
 \label{eq:plan2}
 \end{figure*}
 
@@ -275,7 +275,7 @@ $$
 \end{array}
 $$
 
-The plan found by the SMTPlan for this domain and problem file is shown in Figure~\ref{fig:cashpoint plan}. The solution found by the SMT solver is not guaranteed to be optimal with respect to time. This is demonstrated by the plan shown in Figure~\ref{fig:cashpoint plan}, in which there is a 2-second gap between the end of the first withdraw action and the beginning of the second. This is because the only constraint is that the two happenings are separated by at least $\epsilon$, and the SMT solver is left to choose any valid value. It is possible to include a metric for the SMT solver to optimise; for example, the time point of the final happening. However, this does not guarantee optimality with respect to plan duration, as increasing the bound on the number of happenings might lead to a solution with shorter duration.
+The plan found by the SMTPlan for this domain and problem file is shown in Figure~\ref{fig:cashpoint plan}. The solution found by the SMT solver is not guaranteed to be optimal with respect to time. This is demonstrated by the plan shown in Figure~\ref{fig:cashpoint plan}, in which there is a 2-second gap between the end of the first withdraw action and the beginning of the second. This is because the only constraint is that the two happenings are separated by at least $\epsilon$, and the SMT solver is left to choose any valid value. It is possible to include a metric for the SMT solver to optimise, for example, the time point of the final happening. However, this does not guarantee optimality with respect to plan duration, as increasing the bound on the number of happenings might lead to a solution with shorter duration.
 
 \begin{figure}[thb]
 \small
@@ -291,7 +291,7 @@ The plan found by the SMTPlan for this domain and problem file is shown in Figur
 \label{fig:cashpoint plan}
 \end{figure}
 
-Table~\ref{tab:cashpoint} shows part of a satisfying assignment to an encoding of a problem in the cashpoint domain. The assignment corresponds to the plan shown in Figure~\ref{fig:cashpoint plan}, and displays only the second and third happenings. The second happening occurs 7 time units after starting the plan, and the duration of interval between the two happenings 2 time units.
+Table~\ref{tab:cashpoint} shows part of a satisfying assignment to an encoding of a problem in the cashpoint domain. The assignment corresponds to the plan shown in Figure~\ref{fig:cashpoint plan}, and displays only the second and third happenings. The second happening occurs 7 time units after starting the plan, and the duration of interval between the two happenings is 2 time units.
 
 \begin{table}[htb]
 \centering
@@ -347,6 +347,6 @@ t_2:=7 & t_3:=9 \\
 \end{array}
 \\ \hline
 \end{tabular}
-\caption{Assignment to numeric and propositional variables associated with the $withdraw\_money$ action in the cashpoint domain. Boolean variables that are true are assigned as 1 and the ones are false are 0.}
+\caption{Assignment to numeric and propositional variables associated with the $withdraw\_money$ action in the cashpoint domain. Boolean variables that are true are assigned as 1 and the ones that are false are 0.}
 \label{tab:cashpoint}
 \end{table}
