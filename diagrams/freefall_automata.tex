@@ -16,10 +16,11 @@
 
 \draw[->,shorten >=1pt] (p4) to  (p1);
 \node (p0_d) at (-6.0,0.75) {\textit{Holding}};
-\node (p0_d) at (-6.0,0.25) {\textit{Inv:}   $h=h_0$};
-\node (p0_d) at (-6.0,-0.25){$v=v_0 \wedge holding $};
+%\node (p0_d) at (-6.0,0.25) {\textit{Inv:}   $h=h_0$};
+\node (p0_d) at (-6.0,0){$v=v_0 \wedge holding $};
 \node (p0_d) at (-6.0,-0.75) {\textit{Eff:}\textit{holding}};
 \node (p0_d) at (-3.0,0.25) {$\textit{Release}$};
+\draw[->,shorten >=1pt] (p2) to [out=310,in=340,loop,looseness=5.5] (p1);
 \node (p0_d) at (-3.0,-0.25) {};
 
 \node[circle, inner sep=4pt,draw, minimum height=90pt] (p2) at (0,0) {};
@@ -42,7 +43,7 @@
 
 \node[circle, inner sep=4pt,draw, minimum height=80pt] (p3) at (6,0) {};
 \node (p2_d) at (6.0,0.75) {\textit{Caught}};
-\node (p2_d) at (6.0,0.25) {\textit{Inv:}   $h=h_{goal}$};
+\node (p2_d) at (6.0,0.25) {\textit{Inv:}   $h>=h_{goal}$};
 \node (p2_d) at (6.0,-0.25){\textit{Eff:}  $v=0$};
 \node (p2_d) at (6.0,-0.75) {$\textit{caught}$};
 \end{scope}

@@ -15,7 +15,7 @@ Our working example considers a ball that falls vertically under the influence o
 
 \begin{figure}[!ht]
 \centering
-\includegraphics[width=0.60\textwidth]{diagrams/FreeFall2.png}
+\includegraphics[width=0.7\textwidth]{diagrams/FreeFall3.png}
 \caption{Working example (Free Fall problem): indicates a ball that is released vertically from the initial height of $h_0$ and bounces as soon as it reaches the floor. The diagram shows two different goal conditions we can specify for the robot to catch the ball; at a specific height ($h_{goal}$) or at a specific time after releasing the ball ($t_{caught}$).}
 \label{fig:Freefall}
 \end{figure}
@@ -55,7 +55,8 @@ In this section we describe how the hybrid automaton of the Free Fall problem ca
 \small
 \begin{BVerbatim}
 (define (domain dropping_ball)
-(:requirements :fluents :typing :durative-actions :time :negative-preconditions :duration-inequalities :timed-initial-literals) ;;:durative-actions :time :negative-preconditions :duration-inequalities
+(:requirements :fluents :typing :durative-actions :time :negative-preconditions 
+               :duration-inequalities :timed-initial-literals) 
 
 (:types ball)
 (:predicates (holding ?b - ball) (caught ?b - ball))

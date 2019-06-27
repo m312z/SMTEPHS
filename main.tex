@@ -41,11 +41,12 @@
 \begin{document}
 
 \title{Planning for Hybrid Systems via Satisfiability Modulo Theory}
-\author{\center
- Michael Cashmore, Daniele Magazzeni, Parisa Zehtabi \\
-King’s College London, London, WC2R 2LS \\
-\textit{firstname.lastname@kcl.ac.uk} \\
-}
+\author{\name Michael Cashmore \email michael.cashmore@kcl.ac.uk \\
+       \name Daniele Magazzeni \email daniele.magazzeni@kcl.ac.uk \\
+       \name Parisa Zehtabi \email parisa.zehtabi@kcl.ac.uk \\
+        \addr King's College London\\
+        Bush House, WC2B 4BG, London, UK}
+
 \maketitle
 
 %\tableofcontents
@@ -53,9 +54,17 @@ King’s College London, London, WC2R 2LS \\
 \begin{abstract}
 Planning for hybrid systems is important for dealing with real-world applications, and PDDL+ supports this representation of domains with mixed discrete and continuous dynamics.
 %
-In this paper we present a new approach for planning for hybrid systems, based on encoding the planning problem as a Satisfiability Modulo Theory (SMT) formula. This is the first SMT encoding that can handle the whole set of PDDL+ features, and is implemented in the SMTPlan planner. The encoding is based on the notion of happenings, and can be applied on domains with nonlinear continuous change. We describe the encoding in detail and provide in-depth examples.
+In this paper we present a new approach for planning for hybrid systems, based on encoding the planning problem as a Satisfiability Modulo Theory (SMT) formula.
+%%
+This is the first SMT encoding that can handle the whole set of PDDL+ features (including processes and events), and is implemented in the planner SMTPlan. SMTPlan not only covers the full semantics of PDDL+, but can also deal with non-linear polynomial continuous changes without discretization. This allows it to generate plans with non-linear dynamics that are correct-by-construction.
+%%
+The encoding is based on the notion of happenings, and can be applied on domains with nonlinear continuous change. We describe the encoding in detail and provide in-depth examples.
 %
-We apply this encoding in an iterative deepening planning algorithm, and demonstrate excellent results on benchmark PDDL+ problems. We also present experiments which explore the performance of the proposed approach on temporal planning problems, analysing its strengths and weaknesses.
+We apply this encoding in an iterative deepening planning algorithm.
+%
+Experimental results show that the approach dramatically outperforms existing work in finding plans for PDDL+ problems. The approach differs from traditional state-based search approaches to planning in that the performance is not affected by the duration of the plan, and only linearly by the number of objects in the problem instance.
+%
+We also present experiments which explore the performance of the proposed approach on temporal planning problems, showing that the scalability of the approach is limited by the size of the discrete search space.
 %
 We further extend the encoding to include planning with control parameters. The extended encoding allows the definition of actions to include infinite domain parameters, called control parameters. We present experiments on a set of problems with control parameters to demonstrate the positive effect they provide to the approach of planning via SMT.
 \end{abstract}

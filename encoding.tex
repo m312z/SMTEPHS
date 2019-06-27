@@ -160,7 +160,7 @@ Therefore, the existence of a plan for a  {\sl PDDL+ planning problem $\Pi+$ wit
   \item $I(P_{0,1}\cup V_{0,1})$
   \item $G(P_{B+1,n}\cup V_{B+1,n})$
   % Timing of happenings
-  \item $time_0 = 0$
+  \item $time_1 = 0$
   \item $\bigwedge_{i=2}^n time_i \geq time_{i-1}+\epsilon$
 \end{enumerate}
 \textbf{Proposition support}
@@ -210,7 +210,7 @@ Constraint (P8) enforces the invariant of the process. If a process is active, t
 $$
 ps_{t_j} \rightarrow \bigwedge^{A_{t_j}}_{a_{t_j}=1} \left((\frac{d^af}{dt^a})_j(\frac{d^af}{dt^a})_{j+1} >= 0\right); 
 $$
-where $f$ is the numeric, non-constant part of the invariant, and where the $(A+1)$th derivative of $f$ is identically zero. This ensures that the derivatives of the function do not cross zero over the interval, thus a fluctuating value of $f$ cannot violate the invariant condition between $t_j$ and $t_{j+1}$.
+where $f$ is the numeric, non-constant part of the invariant, and where the $(A+1)$th derivative of $f$ is identically zero. This ensures that the derivatives of the function do not cross zero over the interval, thus a fluctuating value of $f$ cannot violate the invariant condition between $t_j$ and $t_{j+1}$. This is explained in more detail in Section~\ref{sec:enc_zerocrossing}.
 
 \begin{figure*}[htb!]
 \center
@@ -252,6 +252,10 @@ Where $v_0$ is the initial velocity, and $a$ is the constant acceleration. This 
 
 Note that in this approach, the integration and differentiation required for P8, P9, and P10 are performed outside the solver, during the encoding. Hence the integration is done only once for each domain.
 \end{itemize}
+
+\subsection{Continuous Change and the Zero-Crossing Problem}\label{sec:enc_zerocrossing}
+
+
 
 \subsection{SMTPlan Architecture} \label{sssec:SMTPlan_Archi}
 
